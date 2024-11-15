@@ -35,14 +35,15 @@ const SafetyApp = () => {
   const [hoveredIssue, setHoveredIssue] = useState(null);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.006 });
+  const [isIssuesListExpanded, setIsIssuesListExpanded] = useState(false); // State to control layout
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const formatTime = (timestamp) => new Date(timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  const formatTime = (timestamp) =>
+    new Date(timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   const getChipColor = (type) => (type === "weather" ? "primary" : "secondary");
   const handleIssueSelect = (issue) => {
-    // TODO : modal popup
     setSelectedIssue(issue.id);
     setMapCenter(issue.coordinates);
   };
@@ -52,20 +53,52 @@ const SafetyApp = () => {
       <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
         <AppBar position="static" elevation={1}>
           <Toolbar>
-            <Typography variant="h6" color="text.primary">Non-Crime Safety App</Typography>
+            <Typography variant="h6" color="text.primary">
+              Non-Crime Safety App
+            </Typography>
           </Toolbar>
         </AppBar>
 
-        <Container maxWidth="xl" sx={{ mt: 3, display: "flex", flexDirection: isSmallScreen ? "column" : "row", gap: 3, height: "calc(100vh - 100px)" }}>
-          <Box sx={{ width: isSmallScreen ? "100%" : "75%", height: isSmallScreen ? "50vh" : "100%" }}>
-            <MapArea
-              issues={DUMMY_ISSUES}
-              mapCenter={mapCenter}
-              hoveredIssue={hoveredIssue}
-              selectedIssue={selectedIssue}
-            />
-          </Box>
-          <Box sx={{ width: isSmallScreen ? "100%" : "25%", height: isSmallScreen ? "50vh" : "100%"}}>
+        <Container
+          maxWidth="xl"
+          sx={{
+            mt: 3,
+            display: "flex",
+            flexDirection: isSmallScreen ? "column" : "row",
+            gap: 3,
+            height: "calc(100vh - 100px)",
+          }}
+        >
+          {/* Map Area */}
+          {!isIssuesListExpanded && (
+            <Box
+              sx={{
+                width: isSmallScreen ? "100%" : "75%",
+                height: isSmallScreen ? "50vh" : "100%",
+                flexShrink: 0,
+              }}
+            >
+              <MapArea
+                issues={DUMMY_ISSUES}
+                mapCenter={mapCenter}
+                hoveredIssue={hoveredIssue}
+                selectedIssue={selectedIssue}
+              />
+            </Box>
+          )}
+          {/* Issues List */}
+          <Box
+            sx={{
+              width: isSmallScreen || isIssuesListExpanded ? "100%" : "25%",
+              height: isSmallScreen
+                ? isIssuesListExpanded
+                  ? "100%"
+                  : "50vh"
+                : "100%",
+              overflow: "hidden",
+              flexGrow: isIssuesListExpanded ? 1 : 0,
+            }}
+          >
             <IssuesList
               issues={DUMMY_ISSUES}
               hoveredIssue={hoveredIssue}
@@ -74,6 +107,8 @@ const SafetyApp = () => {
               setHoveredIssue={setHoveredIssue}
               getChipColor={getChipColor}
               formatTime={formatTime}
+              isExpanded={isIssuesListExpanded}
+              toggleExpand={() => setIsIssuesListExpanded(!isIssuesListExpanded)}
             />
           </Box>
         </Container>

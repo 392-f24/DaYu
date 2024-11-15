@@ -1,6 +1,6 @@
 // IssuesList.js
 import React from "react";
-import { Box, List, Paper, Typography } from "@mui/material";
+import { Box,Button, List, Paper, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import IssueCard from "./IssueCard";
 
@@ -23,29 +23,55 @@ const ScrollableList = styled(List)(({ theme }) => ({
     },
   }));
 
-const IssuesList = ({ issues, hoveredIssue, selectedIssue, handleIssueSelect, setHoveredIssue, getChipColor, formatTime }) => (
-  <IssuesListContainer elevation={0}>
-    <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-      <Typography variant="h6" component="div">
-        Safety Issues
-      </Typography>
-    </Box>
-    <ScrollableList>
-      {issues.map((issue) => (
-        <IssueCard
-          key={issue.id}
-          issue={issue}
-          isSelected={selectedIssue === issue.id}
-          isHovered={hoveredIssue === issue.id}
-          handleMouseEnter={setHoveredIssue}
-          handleMouseLeave={() => setHoveredIssue(null)}
-          handleSelect={handleIssueSelect}
-          getChipColor={getChipColor}
-          formatTime={formatTime}
-        />
-      ))}
-    </ScrollableList>
-  </IssuesListContainer>
-);
+  const IssuesList = ({
+    issues,
+    hoveredIssue,
+    selectedIssue,
+    handleIssueSelect,
+    setHoveredIssue,
+    getChipColor,
+    formatTime,
+    isExpanded,
+    toggleExpand,
+  }) => (
+    <IssuesListContainer elevation={0}>
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: 1,
+          borderColor: "divider",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h6" component="div">
+          Safety Issues
+        </Typography>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={toggleExpand}
+        >
+          {isExpanded ? "Show Map" : "Expand"}
+        </Button>
+      </Box>
+      <ScrollableList>
+        {issues.map((issue) => (
+          <IssueCard
+            key={issue.id}
+            issue={issue}
+            isSelected={selectedIssue === issue.id}
+            isHovered={hoveredIssue === issue.id}
+            handleMouseEnter={setHoveredIssue}
+            handleMouseLeave={() => setHoveredIssue(null)}
+            handleSelect={handleIssueSelect}
+            getChipColor={getChipColor}
+            formatTime={formatTime}
+          />
+        ))}
+      </ScrollableList>
+    </IssuesListContainer>
+  );
 
 export default IssuesList;
