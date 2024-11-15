@@ -1,9 +1,13 @@
 // SafetyApp.js
 import React, { useState } from "react";
-import { AppBar, Box, Container, Toolbar, Typography, useMediaQuery } from "@mui/material";
+import { Box, Container, useMediaQuery } from "@mui/material";
 import { ThemeProvider, createTheme, useTheme } from "@mui/material/styles";
+import CustomAppBar from "./components/CustomAppBar";
 import MapArea from "./components/MapArea";
 import IssuesList from "./components/IssuesList";
+import { DUMMY_ISSUES } from "./data/dummyData";
+import { getChipColor } from "./utilities/color";
+import { formatTime } from "./utilities/time";
 
 // Theme configuration
 const lightTheme = createTheme({
@@ -17,19 +21,19 @@ const lightTheme = createTheme({
   },
   components: {
     MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
-    MuiAppBar: { styleOverrides: { root: { backgroundImage: "none", backgroundColor: "#ffffff", color: "#1e293b" } } },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+          backgroundColor: "#ffffff",
+          color: "#1e293b",
+        },
+      },
+    },
+    // tags
     MuiChip: { styleOverrides: { root: { fontWeight: 500 } } },
   },
 });
-
-const DUMMY_ISSUES = [
-  { id: 1, title: "Icy Sidewalk Conditions", description: "Multiple reports of dangerous ice patches", location: "Main St & 5th Ave", timestamp: "2024-11-12T08:30:00", type: "weather", severity: "high", coordinates: { lat: 40.7128, lng: -74.006 } },
-  { id: 2, title: "Power Outage", description: "Affecting 200+ households in downtown area", location: "Downtown District", timestamp: "2024-11-12T09:15:00", type: "infrastructure", severity: "high", coordinates: { lat: 40.7148, lng: -74.004 } },
-  { id: 3, title: "Road Construction", description: "Lane closure causing traffic delays", location: "Broadway & 3rd St", timestamp: "2024-11-12T07:45:00", type: "infrastructure", severity: "medium", coordinates: { lat: 40.7138, lng: -74.002 } },
-  { id: 4, title: "Icy Sidewalk Conditions", description: "Multiple reports of dangerous ice patches", location: "Main St & 5th Ave", timestamp: "2024-11-12T08:30:00", type: "weather", severity: "high", coordinates: { lat: 40.7128, lng: -74.006 } },
-  { id: 5, title: "Power Outage", description: "Affecting 200+ households in downtown area", location: "Downtown District", timestamp: "2024-11-12T09:15:00", type: "infrastructure", severity: "high", coordinates: { lat: 40.7148, lng: -74.004 } },
-  { id: 6, title: "Road Construction", description: "Lane closure causing traffic delays", location: "Broadway & 3rd St", timestamp: "2024-11-12T07:45:00", type: "infrastructure", severity: "medium", coordinates: { lat: 40.7138, lng: -74.002 } },
-];
 
 const SafetyApp = () => {
   const [hoveredIssue, setHoveredIssue] = useState(null);
@@ -39,10 +43,6 @@ const SafetyApp = () => {
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const formatTime = (timestamp) =>
-    new Date(timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-  const getChipColor = (type) => (type === "weather" ? "primary" : "secondary");
 
   const handleIssueSelect = (issue) => {
     setSelectedIssue(issue.id);
@@ -56,14 +56,7 @@ const SafetyApp = () => {
   return (
     <ThemeProvider theme={lightTheme}>
       <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
-        <AppBar position="static" elevation={1}>
-          <Toolbar>
-            <Typography variant="h6" color="text.primary">
-              Non-Crime Safety App
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
+        <CustomAppBar />
         <Container
           maxWidth="xl"
           sx={{
@@ -95,7 +88,11 @@ const SafetyApp = () => {
           <Box
             sx={{
               width: isSmallScreen || isIssuesListExpanded ? "100%" : "25%",
-              height: isSmallScreen ? (isIssuesListExpanded ? "100%" : "50vh") : "100%",
+              height: isSmallScreen
+                ? isIssuesListExpanded
+                  ? "100%"
+                  : "50vh"
+                : "100%",
               overflow: "hidden",
               flexGrow: isIssuesListExpanded ? 1 : 0,
             }}
