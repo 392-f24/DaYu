@@ -43,9 +43,14 @@ const SafetyApp = () => {
   const formatTime = (timestamp) =>
     new Date(timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   const getChipColor = (type) => (type === "weather" ? "primary" : "secondary");
+
   const handleIssueSelect = (issue) => {
     setSelectedIssue(issue.id);
     setMapCenter(issue.coordinates);
+  };
+
+  const toggleExpand = () => {
+    setIsIssuesListExpanded((prev) => !prev);
   };
 
   return (
@@ -90,11 +95,7 @@ const SafetyApp = () => {
           <Box
             sx={{
               width: isSmallScreen || isIssuesListExpanded ? "100%" : "25%",
-              height: isSmallScreen
-                ? isIssuesListExpanded
-                  ? "100%"
-                  : "50vh"
-                : "100%",
+              height: isSmallScreen ? (isIssuesListExpanded ? "100%" : "50vh") : "100%",
               overflow: "hidden",
               flexGrow: isIssuesListExpanded ? 1 : 0,
             }}
@@ -108,7 +109,7 @@ const SafetyApp = () => {
               getChipColor={getChipColor}
               formatTime={formatTime}
               isExpanded={isIssuesListExpanded}
-              toggleExpand={() => setIsIssuesListExpanded(!isIssuesListExpanded)}
+              toggleExpand={toggleExpand}
             />
           </Box>
         </Container>
