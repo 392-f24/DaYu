@@ -39,6 +39,7 @@ const SafetyApp = () => {
   const formatTime = (timestamp) => new Date(timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   const getChipColor = (type) => (type === "weather" ? "primary" : "secondary");
   const handleIssueSelect = (issue) => {
+    // TODO : modal popup
     setSelectedIssue(issue.id);
     setMapCenter(issue.coordinates);
   };
