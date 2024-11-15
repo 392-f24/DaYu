@@ -13,16 +13,15 @@ const IssuesListContainer = styled(Paper)(({ theme }) => ({
 }));
 
 const ScrollableList = styled(List)(({ theme }) => ({
-  height: "calc(100% - 56px)",
-  overflowY: "auto",
-  "&::-webkit-scrollbar": {
-    width: "0.4em",
-  },
-  "&::-webkit-scrollbar-thumb": {
-    backgroundColor: "rgba(0,0,0,.1)",
-    borderRadius: "4px",
-  },
-}));
+    height: "calc(100% - 56px)",
+    overflowY: "auto",
+    scrollbarWidth: "none", // For Firefox
+    msOverflowStyle: "none", // For Internet Explorer and Edge
+  
+    "&::-webkit-scrollbar": {
+      display: "none", // For Chrome, Safari, and other WebKit browsers
+    },
+  }));
 
 const IssuesList = ({ issues, hoveredIssue, selectedIssue, handleIssueSelect, setHoveredIssue, getChipColor, formatTime }) => (
   <IssuesListContainer elevation={0}>
