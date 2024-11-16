@@ -1,5 +1,5 @@
 // SafetyApp.js
-import React, { useState } from "react";
+import { useState, useRef} from "react";
 import { Box, Container, useMediaQuery } from "@mui/material";
 import { ThemeProvider, createTheme, useTheme } from "@mui/material/styles";
 import CustomAppBar from "./components/CustomAppBar";
@@ -38,15 +38,17 @@ const lightTheme = createTheme({
 const SafetyApp = () => {
   const [hoveredIssue, setHoveredIssue] = useState(null);
   const [selectedIssue, setSelectedIssue] = useState(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.006 });
+  const [mapCenter, setMapCenter] = useState({ lat: 41.8781, lng: -87.6298 });
   const [isIssuesListExpanded, setIsIssuesListExpanded] = useState(false); // State to control layout
-
+  const mapRef = useRef(null); // Reference for the Google Map instance
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleIssueSelect = (issue) => {
     setSelectedIssue(issue.id);
-    setMapCenter(issue.coordinates);
+    if (mapRef.current) {
+      mapRef.current.panTo(issue.coordinates);
+    }
   };
 
   const toggleExpand = () => {
@@ -79,6 +81,7 @@ const SafetyApp = () => {
               <MapArea
                 issues={DUMMY_ISSUES}
                 mapCenter={mapCenter}
+                mapRef={mapRef}
                 hoveredIssue={hoveredIssue}
                 selectedIssue={selectedIssue}
               />

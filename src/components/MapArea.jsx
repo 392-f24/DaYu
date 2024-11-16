@@ -1,6 +1,6 @@
 // MapArea.js
 import React from "react";
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { Box, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { MapPin } from "lucide-react";
@@ -28,25 +28,37 @@ const MapMarker = ({ position, isHighlighted }) => (
   </Box>
 );
 
-const MapArea = ({ issues, mapCenter, hoveredIssue, selectedIssue }) => (
-  <MapContainer elevation={0}>
-    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-      <Map
-        defaultZoom={13}
-        center={mapCenter}
-        mapId="YOUR_MAP_ID"
-        style={{ width: "100%", height: "100%" }}
-      >
-        {issues.map((issue) => (
-          <MapMarker
-            key={issue.id}
-            position={issue.coordinates}
-            isHighlighted={hoveredIssue === issue.id || selectedIssue === issue.id}
-          />
-        ))}
-      </Map>
-    </APIProvider>
-  </MapContainer>
-);
+const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => {
+  const containerStyle = {
+    width: "100%",
+    height: "100%",
+  };
+
+  return (
+    <MapContainer elevation={0}>
+      <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={mapCenter}
+          zoom={13}
+          options={{
+            mapId: "YOUR_MAP_ID",
+          }}
+          onLoad={(map) => {
+            mapRef.current = map;
+            console.log("Map loaded:", map);
+          }}
+        >
+          {issues.map((issue) => (
+            <Marker
+              key={issue.id}
+              position={issue.coordinates}
+            />
+          ))}
+        </GoogleMap>
+      </LoadScript>
+    </MapContainer>
+  );
+};
 
 export default MapArea;
