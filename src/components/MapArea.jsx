@@ -1,9 +1,68 @@
-// MapArea.js
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import { Box, Paper } from "@mui/material";
+import { Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { MapPin } from "lucide-react";
+
+const mapStyle = [
+  {
+    "featureType": "poi",
+    "elementType": "all",
+    "stylers": [{ "visibility": "off" }]
+  },
+  {
+    "featureType": "transit",
+    "elementType": "all",
+    "stylers": [{ "visibility": "off" }]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      { "visibility": "on" },
+      { "color": "#ffffff" },
+      { "weight": 1 }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels",
+    "stylers": [{ "visibility": "on" }]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "labels",
+    "stylers": [{ "visibility": "on" }]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      { "visibility": "on" },
+      { "color": "#ffcc00" },
+      { "weight": 1 }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "geometry",
+    "stylers": [
+      { "visibility": "on" },
+      { "color": "#cccccc" },
+      { "weight": 1 }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "geometry",
+    "stylers": [
+      { "visibility": "on" },
+      { "color": "#e3e3e3" },
+      { "weight": 1 }
+    ]
+  }
+]
+
+
 
 const MapContainer = styled(Paper)(({ theme }) => ({
   height: "100%",
@@ -14,25 +73,22 @@ const MapContainer = styled(Paper)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
 }));
 
-const MapMarker = ({ position, isHighlighted }) => (
-  <Box
-    sx={{
-      position: "absolute",
-      transform: `translate(-50%, -50%) ${isHighlighted ? "scale(1.25)" : "scale(1)"}`,
-      transition: "transform 0.2s",
-      color: isHighlighted ? "primary.main" : "text.secondary",
-      cursor: "pointer",
-    }}
-  >
-    <MapPin />
-  </Box>
-);
-
 const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => {
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [delayComplete, setDelayComplete] = useState(false);
+
   const containerStyle = {
     width: "100%",
     height: "100%",
   };
+
+  // Wait a bit after the map has loaded
+  useEffect(() => {
+    if (mapLoaded) {
+      const timer = setTimeout(() => setDelayComplete(true), 1000); // 1 second delay
+      return () => clearTimeout(timer);
+    }
+  }, [mapLoaded]);
 
   return (
     <MapContainer elevation={0}>
@@ -40,21 +96,29 @@ const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => 
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={mapCenter}
-          zoom={13}
+          zoom={14}
           options={{
-            mapId: "YOUR_MAP_ID",
+            disableDefaultUI: true, // Hides default map controls
+            styles: mapStyle,
           }}
           onLoad={(map) => {
             mapRef.current = map;
-            console.log("Map loaded:", map);
+            setMapLoaded(true);
+            console.log("Map loaded successfully");
           }}
         >
-          {issues.map((issue) => (
-            <Marker
-              key={issue.id}
-              position={issue.coordinates}
-            />
-          ))}
+          {delayComplete &&
+            issues.map((issue) => (
+              <Marker
+                key={issue.id}
+                position={issue.coordinates}
+                onClick={() => {
+                  if (issue.id !== hoveredIssue && issue.id !== selectedIssue) {
+                    mapRef.current.panTo(issue.coordinates);
+                  }
+                }}
+              />
+            ))}
         </GoogleMap>
       </LoadScript>
     </MapContainer>
