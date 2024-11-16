@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, LoadScriptNext, Marker } from "@react-google-maps/api";
 import { Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
@@ -92,7 +92,7 @@ const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => 
 
   return (
     <MapContainer elevation={0}>
-      <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+      <LoadScriptNext googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={mapCenter}
@@ -120,7 +120,7 @@ const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => 
               />
             ))}
         </GoogleMap>
-      </LoadScript>
+      </LoadScriptNext>
     </MapContainer>
   );
 };
