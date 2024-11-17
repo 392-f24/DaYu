@@ -33,8 +33,9 @@ const IssueModal = ({
   isStarred,
   handleVerifyIssue,
   verifiedCount,
+  getChipColor,
 }) => {
-  if (!issue) return null; // Prevent rendering without issue data
+  if (!issue) return null;
 
   const { title, description, location, timestamp, type } = issue;
 
@@ -45,7 +46,11 @@ const IssueModal = ({
         <Typography variant="h5" gutterBottom>
           {title || "Title not specified"}
         </Typography>
-        <Chip label={type || "No category"} color="primary" sx={{ mb: 2 }} />
+        <Chip label={type || "No category"}
+          size="small"
+          color={getChipColor(type)} 
+          variant="outlined"
+          sx={{ mb: 2 }} />
 
         {/* Description */}
         <Typography variant="body1" gutterBottom>

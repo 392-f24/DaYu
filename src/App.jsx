@@ -132,6 +132,7 @@ const SafetyApp = () => {
           issue={DUMMY_ISSUES.find((issue) => issue.id === selectedIssue)}
           handleStarToggle={handleStarToggle}
           isStarred={isStarred}
+          getChipColor={getChipColor}
           />
       </Box>
     </ThemeProvider>
