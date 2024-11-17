@@ -15,6 +15,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { formatTime } from "../utilities/time";
 import { getChipColor } from "../utilities/color";
 import { isIssueSavedByUser } from "../utilities/issueUtils";
+import { toggleSavedIssue } from "../utilities/dbFunctions";
 
 const modalStyle = {
   position: "absolute",
@@ -35,7 +36,6 @@ const IssueModal = ({
   open,
   onClose,
   issue,
-  handleStarToggle,
   handleVerifyIssue,
   verifiedCount,
 }) => {
@@ -88,7 +88,7 @@ const IssueModal = ({
               {verifiedCount} verified by 10 people
             </Typography>
           </Box>
-          <IconButton onClick={handleStarToggle}>
+          <IconButton onClick={() => toggleSavedIssue(userId, issue.id)}>
             {isIssueSavedByUser(userId, issue) ? (
               <BookmarkIcon color="primary" />
             ) : (

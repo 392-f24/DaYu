@@ -6,3 +6,14 @@ export const isIssueSavedByUser = (userId, issue) => {
   }
   return false;
 };
+
+// export const handleSavedToggle = (issue) => {
+//     const isSaved = isIssueSavedByUser(userId, issue.id);
+//     if (isSaved) {
+//       addSavedIssue(userId, issue.id);
+//     } else {
+//       removeSavedIssue(userId, issue.id);
+//     }
+//     setIsSaved((prev) => !prev);
+//   };
+// }

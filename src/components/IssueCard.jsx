@@ -7,7 +7,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { formatTime } from "../utilities/time";
 import { getChipColor } from "../utilities/color";
 import { isIssueSavedByUser } from "../utilities/issueUtils";
-import { useEffect } from "react";
+import { toggleSavedIssue } from "../utilities/dbFunctions";
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
@@ -20,16 +20,14 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-const IssueTitle = ({ title, category, isSaved }) => (
+const IssueTitle = ({ title, category, isSaved, issue, userId }) => (
   <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
       <Box>
         <IconButton
           aria-label="save issue"
           size="small"
-          onClick={() => {
-            console.log("Save this issue with a function!");
-          }}
+          onClick={() => toggleSavedIssue(userId, issue.id)}
         >
           {isSaved ? (
             <Bookmark fontSize="inherit" color="primary" />
@@ -82,6 +80,8 @@ const IssueCard = ({
         title={issue.title}
         category={issue.category}
         isSaved={isIssueSavedByUser(userId, issue)}
+        issue={issue}
+        userId={userId}
       />
       <IssueDetails
         description={issue.description}

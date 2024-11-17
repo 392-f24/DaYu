@@ -12,6 +12,8 @@ import {
   getDoc,
   Timestamp,
   increment,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 
 // Add a new issue
@@ -74,30 +76,43 @@ export const deleteIssue = async (id) => {
   await delay(500);
 };
 
-// add an issue to a user's saved issues
+// Add an issue to a user's saved issues and update the savedBy array in the issue doc
 export const addSavedIssue = async (userId, issueId) => {
   try {
     const savedIssuesRef = collection(db, `users/${userId}/savedIssues`);
+    const issueRef = doc(db, "issues", issueId); // Reference to the issue document
 
-    // check if issue is already added
-    const q = query(savedIssuesRef, where("savedIssue", "==", issueId));
+    // Check if the issue is already saved by the user
+    const q = query(
+      savedIssuesRef,
+      where("savedIssue", "==", `/issues/${issueId}`)
+    );
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      console.log(`Issue ${issueId} is already saved.`);
+      console.log(`Issue ${issueId} is already saved by user ${userId}.`);
       return null;
     }
 
-    // create new saved issue
+    // Step 1: Add the issue to the user's savedIssues subcollection
     const newSavedIssue = {
       savedIssue: `/issues/${issueId}`,
       savedDate: Timestamp.now(),
     };
-
     const docRef = await addDoc(savedIssuesRef, newSavedIssue);
+
+    // Step 2: Append the user reference to the savedBy array in the issue document
+    await updateDoc(issueRef, {
+      savedBy: arrayUnion(`/users/${userId}`), // Use arrayUnion to add userRef if it's not already in the array
+    });
+
+    console.log(`Issue ${issueId} successfully saved by user ${userId}.`);
     return docRef.id;
   } catch (error) {
-    console.error("Error adding saved issue:", error);
+    console.error(
+      "Error adding saved issue and updating savedBy array:",
+      error
+    );
     throw error;
   }
 };
@@ -239,6 +254,66 @@ export const getSavedIssuesDetails = async (userId) => {
     return fullIssues;
   } catch (error) {
     console.error("Error fetching saved issue details:", error);
+    throw error;
+  }
+};
+
+// Toggle saved status of an issue for a user
+export const toggleSavedIssue = async (userId, issueId) => {
+  try {
+    const savedIssuesRef = collection(db, `users/${userId}/savedIssues`);
+    const issueRef = doc(db, "issues", issueId); // Reference to the issue document
+    const userRef = doc(db, "users", userId); // Reference to the user document
+
+    // Check if the issue is already saved by the user
+    const q = query(
+      savedIssuesRef,
+      where("issueId", "==", issueRef) // Compare with the issue ref
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      // Issue is already saved, so remove it
+      console.log(
+        `Removing issue ${issueId} from user ${userId}'s saved issues.`
+      );
+
+      // Step 1: Delete the saved issue from the user's savedIssues subcollection
+      const deletePromises = querySnapshot.docs.map((doc) =>
+        deleteDoc(doc.ref)
+      );
+      await Promise.all(deletePromises);
+
+      // Step 2: Remove the user's reference from the savedBy array in the issue document
+      await updateDoc(issueRef, {
+        savedBy: arrayRemove(userRef), // Use arrayRemove with the user reference
+      });
+
+      console.log(
+        `Issue ${issueId} successfully removed from user ${userId}'s saved issues.`
+      );
+      return { status: "removed", issueId };
+    } else {
+      // Issue is not saved, so add it
+      console.log(`Adding issue ${issueId} to user ${userId}'s saved issues.`);
+
+      // Step 1: Add the issue to the user's savedIssues subcollection
+      const newSavedIssue = {
+        issueId: issueRef, // Store the full path to the issue document
+        savedDate: Timestamp.now(),
+      };
+      await addDoc(savedIssuesRef, newSavedIssue);
+
+      // Step 2: Append the user reference to the savedBy array in the issue document
+      await updateDoc(issueRef, {
+        savedBy: arrayUnion(userRef), // Use arrayUnion with the user reference
+      });
+
+      console.log(`Issue ${issueId} successfully saved by user ${userId}.`);
+      return { status: "added", issueId };
+    }
+  } catch (error) {
+    console.error("Error toggling saved issue:", error);
     throw error;
   }
 };

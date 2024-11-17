@@ -6,7 +6,13 @@ import CustomAppBar from "./components/CustomAppBar";
 import MapArea from "./components/MapArea";
 import IssuesList from "./components/IssuesList";
 import IssueModal from "./components/IssueModal";
-import { fetchIssues, getSavedIssuesDetails } from "./utilities/dbFunctions";
+import {
+  fetchIssues,
+  getSavedIssuesDetails,
+  addSavedIssue,
+  removeSavedIssue,
+} from "./utilities/dbFunctions";
+import { isIssueSavedByUser } from "./utilities/issueUtils";
 
 // Theme configuration
 const lightTheme = createTheme({
@@ -44,7 +50,6 @@ const SafetyApp = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isStarred, setIsStarred] = useState(false);
   const [issues, setIssues] = useState([]);
   const [showSaved, setShowSaved] = useState(false);
 
@@ -62,10 +67,6 @@ const SafetyApp = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-  };
-
-  const handleStarToggle = () => {
-    setIsStarred((prev) => !prev);
   };
 
   const toggleExpand = () => {
@@ -157,7 +158,6 @@ const SafetyApp = () => {
           open={isModalOpen}
           onClose={handleModalClose}
           issue={issues.find((issue) => issue.id === selectedIssue)}
-          handleStarToggle={handleStarToggle}
         />
       </Box>
     </ThemeProvider>
