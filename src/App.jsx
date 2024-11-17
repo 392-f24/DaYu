@@ -46,7 +46,7 @@ const SafetyApp = () => {
 
   const handleIssueSelect = (issue) => {
     setSelectedIssue(issue.id);
-    setMapCenter(issue.coordinates);
+    setMapCenter(issue.location.coordinates);
   };
 
   const toggleExpand = () => {

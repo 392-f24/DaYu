@@ -18,7 +18,9 @@ const MapMarker = ({ position, isHighlighted }) => (
   <Box
     sx={{
       position: "absolute",
-      transform: `translate(-50%, -50%) ${isHighlighted ? "scale(1.25)" : "scale(1)"}`,
+      transform: `translate(-50%, -50%) ${
+        isHighlighted ? "scale(1.25)" : "scale(1)"
+      }`,
       transition: "transform 0.2s",
       color: isHighlighted ? "primary.main" : "text.secondary",
       cursor: "pointer",
@@ -40,8 +42,10 @@ const MapArea = ({ issues, mapCenter, hoveredIssue, selectedIssue }) => (
         {issues.map((issue) => (
           <MapMarker
             key={issue.id}
-            position={issue.coordinates}
-            isHighlighted={hoveredIssue === issue.id || selectedIssue === issue.id}
+            position={issue.location.coordinates}
+            isHighlighted={
+              hoveredIssue === issue.id || selectedIssue === issue.id
+            }
           />
         ))}
       </Map>
