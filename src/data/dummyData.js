@@ -32,7 +32,7 @@ export const DUMMY_ISSUES = [
       coordinates: { lat: 40.7138, lng: -74.002 },
     },
     timestamp: "2024-11-12T07:45:00",
-    category: "pathways",
+    category: "sidewalk",
     severity: "medium",
   },
   {
@@ -44,7 +44,7 @@ export const DUMMY_ISSUES = [
       coordinates: { lat: 40.7112, lng: -74.01 },
     },
     timestamp: "2024-11-12T06:50:00",
-    category: "pathways",
+    category: "sidewalk",
     severity: "medium",
   },
   {
@@ -68,7 +68,7 @@ export const DUMMY_ISSUES = [
       coordinates: { lat: 40.7056, lng: -74.011 },
     },
     timestamp: "2024-11-12T07:00:00",
-    category: "pathways",
+    category: "traffic",
     severity: "high",
   },
 ];
