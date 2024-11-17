@@ -1,2 +1,3 @@
 // TODO: assign each type a color
-export const getChipColor = (type) => (type === "weather" ? "primary" : "secondary");
+export const getChipColor = (category) =>
+  category === "weather" ? "primary" : "secondary";

@@ -14,27 +14,41 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-const IssueTitle = ({ title, type, getChipColor }) => (
+const IssueTitle = ({ title, category, getChipColor }) => (
   <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
       <span>{title}</span>
-      <Chip label={type} size="small" color={getChipColor(type)} variant="outlined" />
+      <Chip
+        label={category}
+        size="small"
+        color={getChipColor(category)}
+        variant="outlined"
+      />
     </Box>
   </Typography>
 );
 
-const IssueDetails = ({ description, location, timestamp, formatTime }) => (
+const IssueDetails = ({ description, address, timestamp, formatTime }) => (
   <Typography component="div" variant="body2" color="text.secondary">
     <Box sx={{ mb: 1 }}>{description}</Box>
     <Box sx={{ display: "flex", gap: 1, fontSize: "12px" }}>
-      <span>{location}</span>
+      <span>{address}</span>
       <span>•</span>
       <span>{formatTime(timestamp)}</span>
     </Box>
   </Typography>
 );
 
-const IssueCard = ({ issue, isSelected, isHovered, handleMouseEnter, handleMouseLeave, handleSelect, getChipColor, formatTime }) => (
+const IssueCard = ({
+  issue,
+  isSelected,
+  isHovered,
+  handleMouseEnter,
+  handleMouseLeave,
+  handleSelect,
+  getChipColor,
+  formatTime,
+}) => (
   <StyledListItem
     onMouseEnter={() => handleMouseEnter(issue.id)}
     onMouseLeave={() => handleMouseLeave()}
@@ -44,10 +58,14 @@ const IssueCard = ({ issue, isSelected, isHovered, handleMouseEnter, handleMouse
     }}
   >
     <Box sx={{ width: "100%" }}>
-      <IssueTitle title={issue.title} type={issue.type} getChipColor={getChipColor} />
+      <IssueTitle
+        title={issue.title}
+        category={issue.category}
+        getChipColor={getChipColor}
+      />
       <IssueDetails
         description={issue.description}
-        location={issue.location}
+        address={issue.location.address}
         timestamp={issue.timestamp}
         formatTime={formatTime}
       />
