@@ -13,8 +13,9 @@ import { formatTime } from "./utilities/time";
 const lightTheme = createTheme({
   palette: {
     mode: "light",
-    primary: { main: "#3b82f6" },
-    secondary: { main: "#22c55e" },
+    primary: { main: "#3b82f6" }, // blue
+    secondary: { main: "#22c55e" }, // green
+    thirdColor: { main: "#f59e0b" }, // yellow
     background: { default: "#f8fafc", paper: "#ffffff" },
     text: { primary: "#1e293b", secondary: "#64748b" },
     divider: "rgba(0, 0, 0, 0.12)",
