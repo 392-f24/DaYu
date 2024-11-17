@@ -14,6 +14,7 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { formatTime } from "../utilities/time";
 import { getChipColor } from "../utilities/color";
+import { isIssueSavedByUser } from "../utilities/issueUtils";
 
 const modalStyle = {
   position: "absolute",
@@ -30,11 +31,11 @@ const modalStyle = {
 };
 
 const IssueModal = ({
+  userId,
   open,
   onClose,
   issue,
   handleStarToggle,
-  isStarred,
   handleVerifyIssue,
   verifiedCount,
 }) => {
@@ -88,7 +89,7 @@ const IssueModal = ({
             </Typography>
           </Box>
           <IconButton onClick={handleStarToggle}>
-            {isStarred ? (
+            {isIssueSavedByUser(userId, issue) ? (
               <BookmarkIcon color="primary" />
             ) : (
               <BookmarkBorderIcon />

@@ -138,6 +138,7 @@ const SafetyApp = () => {
             }}
           >
             <IssuesList
+              userId={userId}
               issues={issues}
               showSaved={showSaved}
               setShowSaved={setShowSaved}
@@ -151,12 +152,12 @@ const SafetyApp = () => {
           </Box>
         </Container>
         <IssueModal
+          userId={userId}
           issues={issues}
           open={isModalOpen}
           onClose={handleModalClose}
           issue={issues.find((issue) => issue.id === selectedIssue)}
           handleStarToggle={handleStarToggle}
-          isStarred={isStarred}
         />
       </Box>
     </ThemeProvider>

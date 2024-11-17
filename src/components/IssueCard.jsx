@@ -2,9 +2,12 @@
 import React from "react";
 import { Box, Chip, ListItem, Typography, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import Bookmark from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { formatTime } from "../utilities/time";
 import { getChipColor } from "../utilities/color";
+import { isIssueSavedByUser } from "../utilities/issueUtils";
+import { useEffect } from "react";
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
@@ -17,7 +20,7 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-const IssueTitle = ({ title, category }) => (
+const IssueTitle = ({ title, category, isSaved }) => (
   <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
       <Box>
@@ -28,7 +31,11 @@ const IssueTitle = ({ title, category }) => (
             console.log("Save this issue with a function!");
           }}
         >
-          <BookmarkBorderIcon fontSize="inherit" />
+          {isSaved ? (
+            <Bookmark fontSize="inherit" color="primary" />
+          ) : (
+            <BookmarkBorderIcon fontSize="inherit" />
+          )}
         </IconButton>
         {title}
       </Box>
@@ -54,6 +61,7 @@ const IssueDetails = ({ description, address, postDate }) => (
 );
 
 const IssueCard = ({
+  userId,
   issue,
   isSelected,
   isHovered,
@@ -70,7 +78,11 @@ const IssueCard = ({
     }}
   >
     <Box sx={{ width: "100%" }}>
-      <IssueTitle title={issue.title} category={issue.category} />
+      <IssueTitle
+        title={issue.title}
+        category={issue.category}
+        isSaved={isIssueSavedByUser(userId, issue)}
+      />
       <IssueDetails
         description={issue.description}
         address={issue.location.address}

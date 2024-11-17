@@ -45,6 +45,7 @@ const SwipeHandle = styled(Box)(({ theme }) => ({
 }));
 
 const IssuesList = ({
+  userId,
   issues,
   showSaved,
   setShowSaved,
@@ -106,6 +107,7 @@ const IssuesList = ({
       <ScrollableList>
         {issues.map((issue) => (
           <IssueCard
+            userId={userId}
             key={issue.id}
             issue={issue}
             isSelected={selectedIssue === issue.id}
