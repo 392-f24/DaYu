@@ -114,7 +114,7 @@ const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => 
                 position={issue.coordinates}
                 onClick={() => {
                   if (issue.id !== hoveredIssue && issue.id !== selectedIssue) {
-                    mapRef.current.panTo(issue.coordinates);
+                    mapRef.current.panTo(issue.location.coordinates);
                   }
                 }}
               />
