@@ -41,7 +41,8 @@ const IssueModal = ({
 }) => {
   if (!issue) return null;
 
-  const { title, description, location, postDate, category } = issue;
+  const { title, description, location, postDate, category, isResolved } =
+    issue;
   const [saved, setSaved] = useState(isIssueSavedByUser(userId, issue));
   const handleOnClick = () => {
     toggleSavedIssue(userId, issue.id);
@@ -74,6 +75,10 @@ const IssueModal = ({
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Posted on: {postDate ? formatTime(postDate) : "Date not available"}
+        </Typography>
+
+        <Typography variant="body2" color="text.secondary">
+          Resolved: {isResolved ? "Yes" : "No"}
         </Typography>
 
         {/* Verified count and star toggle */}
