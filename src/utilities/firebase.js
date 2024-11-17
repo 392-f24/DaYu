@@ -6,12 +6,12 @@ import { getStorage } from "firebase/storage";
 
 // Your Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyBBSgi5EBD16fzG1C0CGiR87Jfn5u7gOIc",
-    authDomain: "cs392-dayu-bd95c.firebaseapp.com",
-    projectId: "cs392-dayu-bd95c",
-    storageBucket: "cs392-dayu-bd95c.firebasestorage.app",
-    messagingSenderId: "389191954311",
-    appId: "1:389191954311:web:bef4a80d423b54d068ad22"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: "cs392-dayu-bd95c.firebaseapp.com",
+  projectId: "cs392-dayu-bd95c",
+  storageBucket: "cs392-dayu-bd95c.firebasestorage.app",
+  messagingSenderId: "389191954311",
+  appId: "1:389191954311:web:bef4a80d423b54d068ad22",
 };
 
 // Initialize Firebase app
