@@ -1,5 +1,5 @@
 // IssueCard.js
-import React from "react";
+import React, { useState } from "react";
 import { Box, Chip, ListItem, Typography, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Bookmark from "@mui/icons-material/Bookmark";
@@ -20,32 +20,39 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-const IssueTitle = ({ title, category, isSaved, issue, userId }) => (
-  <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
-    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-      <Box>
-        <IconButton
-          aria-label="save issue"
+const IssueTitle = ({ title, category, isSaved, issue, userId }) => {
+  const [saved, setSaved] = useState(isSaved);
+  const handleOnClick = () => {
+    toggleSavedIssue(userId, issue.id);
+    setSaved((prev) => !prev);
+  };
+  return (
+    <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box>
+          <IconButton
+            aria-label="save issue"
+            size="small"
+            onClick={handleOnClick}
+          >
+            {saved ? (
+              <Bookmark fontSize="inherit" color="primary" />
+            ) : (
+              <BookmarkBorderIcon fontSize="inherit" />
+            )}
+          </IconButton>
+          {title}
+        </Box>
+        <Chip
+          label={category}
           size="small"
-          onClick={() => toggleSavedIssue(userId, issue.id)}
-        >
-          {isSaved ? (
-            <Bookmark fontSize="inherit" color="primary" />
-          ) : (
-            <BookmarkBorderIcon fontSize="inherit" />
-          )}
-        </IconButton>
-        {title}
+          color={getChipColor(category)}
+          variant="outlined"
+        />
       </Box>
-      <Chip
-        label={category}
-        size="small"
-        color={getChipColor(category)}
-        variant="outlined"
-      />
-    </Box>
-  </Typography>
-);
+    </Typography>
+  );
+};
 
 const IssueDetails = ({ description, address, postDate }) => (
   <Typography component="div" variant="body2" color="text.secondary">

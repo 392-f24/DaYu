@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   Box,
@@ -42,6 +42,11 @@ const IssueModal = ({
   if (!issue) return null;
 
   const { title, description, location, postDate, category } = issue;
+  const [saved, setSaved] = useState(isIssueSavedByUser(userId, issue));
+  const handleOnClick = () => {
+    toggleSavedIssue(userId, issue.id);
+    setSaved((prev) => !prev);
+  };
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -88,12 +93,8 @@ const IssueModal = ({
               {verifiedCount} verified by 10 people
             </Typography>
           </Box>
-          <IconButton onClick={() => toggleSavedIssue(userId, issue.id)}>
-            {isIssueSavedByUser(userId, issue) ? (
-              <BookmarkIcon color="primary" />
-            ) : (
-              <BookmarkBorderIcon />
-            )}
+          <IconButton onClick={handleOnClick}>
+            {saved ? <BookmarkIcon color="primary" /> : <BookmarkBorderIcon />}
           </IconButton>
         </Box>
 
