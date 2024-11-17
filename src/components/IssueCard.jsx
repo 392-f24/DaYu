@@ -1,7 +1,8 @@
 // IssueCard.js
 import React from "react";
-import { Box, Chip, ListItem, Typography } from "@mui/material";
+import { Box, Chip, ListItem, Typography, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
@@ -17,7 +18,18 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
 const IssueTitle = ({ title, category, getChipColor }) => (
   <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-      <span>{title}</span>
+      <Box>
+        <IconButton
+          aria-label="save issue"
+          size="small"
+          onClick={() => {
+            console.log("Save this issue with a function!");
+          }}
+        >
+          <BookmarkBorderIcon fontSize="inherit" />
+        </IconButton>
+        {title}
+      </Box>
       <Chip
         label={category}
         size="small"

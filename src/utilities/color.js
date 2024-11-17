@@ -1,3 +1,5 @@
-// TODO: assign each type a color
-export const getChipColor = (category) =>
-  category === "weather" ? "primary" : "secondary";
+export const getChipColor = (category) => {
+  if (category === "sidewalk") return "primary";
+  if (category === "traffic") return "secondary";
+  return "thirdColor";
+};
