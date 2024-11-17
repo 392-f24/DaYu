@@ -49,9 +49,10 @@ const SafetyApp = () => {
   const [isStarred, setIsStarred] = useState(false);
 
   const handleIssueSelect = (issue) => {
+    console.log("Selected issue:", issue);
     setSelectedIssue(issue.id);
     if (mapRef.current) {
-      mapRef.current.panTo(issue.coordinates);
+      mapRef.current.panTo(issue.location.coordinates);
     }
     setIsModalOpen(true);
   };

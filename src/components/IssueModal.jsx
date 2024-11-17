@@ -9,7 +9,9 @@ import {
   TextField,
   Divider,
 } from "@mui/material";
-import { Star, StarBorder, CheckCircleOutline } from "@mui/icons-material";
+import { CheckCircleOutline } from "@mui/icons-material";
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 
 const modalStyle = {
   position: "absolute",
@@ -37,7 +39,7 @@ const IssueModal = ({
 }) => {
   if (!issue) return null;
 
-  const { title, description, location, timestamp, type } = issue;
+  const { title, description, location, timestamp, category } = issue;
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -46,9 +48,9 @@ const IssueModal = ({
         <Typography variant="h5" gutterBottom>
           {title || "Title not specified"}
         </Typography>
-        <Chip label={type || "No category"}
+        <Chip label={category || "No category"}
           size="small"
-          color={getChipColor(type)} 
+          color={getChipColor(category)} 
           variant="outlined"
           sx={{ mb: 2 }} />
 
@@ -59,7 +61,7 @@ const IssueModal = ({
 
         {/* Location and timestamp */}
         <Typography variant="body2" color="text.secondary">
-          Location: {location || "Not specified"}
+          Location: {location.address || "Not specified"}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Posted on:{" "}
@@ -84,7 +86,7 @@ const IssueModal = ({
             <Typography variant="body2">{verifiedCount} verified by 10 people</Typography>
           </Box>
           <IconButton onClick={handleStarToggle}>
-            {isStarred ? <Star color="primary" /> : <StarBorder />}
+            {isStarred ? <BookmarkIcon color="primary" /> : <BookmarkBorderIcon />}
           </IconButton>
         </Box>
 

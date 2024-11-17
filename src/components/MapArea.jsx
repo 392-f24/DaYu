@@ -111,7 +111,7 @@ const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => 
             issues.map((issue) => (
               <Marker
                 key={issue.id}
-                position={issue.coordinates}
+                position={issue.location.coordinates}
                 onClick={() => {
                   if (issue.id !== hoveredIssue && issue.id !== selectedIssue) {
                     mapRef.current.panTo(issue.location.coordinates);
