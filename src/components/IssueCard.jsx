@@ -3,6 +3,8 @@ import React from "react";
 import { Box, Chip, ListItem, Typography, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import { formatTime } from "../utilities/time";
+import { getChipColor } from "../utilities/color";
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
@@ -15,7 +17,7 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-const IssueTitle = ({ title, category, getChipColor }) => (
+const IssueTitle = ({ title, category }) => (
   <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
       <Box>
@@ -40,13 +42,13 @@ const IssueTitle = ({ title, category, getChipColor }) => (
   </Typography>
 );
 
-const IssueDetails = ({ description, address, timestamp, formatTime }) => (
+const IssueDetails = ({ description, address, postDate }) => (
   <Typography component="div" variant="body2" color="text.secondary">
     <Box sx={{ mb: 1 }}>{description}</Box>
     <Box sx={{ display: "flex", gap: 1, fontSize: "12px" }}>
       <span>{address}</span>
       <span>•</span>
-      <span>{formatTime(timestamp)}</span>
+      <span>{formatTime(postDate)}</span>
     </Box>
   </Typography>
 );
@@ -58,8 +60,6 @@ const IssueCard = ({
   handleMouseEnter,
   handleMouseLeave,
   handleSelect,
-  getChipColor,
-  formatTime,
 }) => (
   <StyledListItem
     onMouseEnter={() => handleMouseEnter(issue.id)}
@@ -70,16 +70,11 @@ const IssueCard = ({
     }}
   >
     <Box sx={{ width: "100%" }}>
-      <IssueTitle
-        title={issue.title}
-        category={issue.category}
-        getChipColor={getChipColor}
-      />
+      <IssueTitle title={issue.title} category={issue.category} />
       <IssueDetails
         description={issue.description}
         address={issue.location.address}
-        timestamp={issue.timestamp}
-        formatTime={formatTime}
+        postDate={issue.postDate}
       />
     </Box>
   </StyledListItem>

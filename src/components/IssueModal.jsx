@@ -10,8 +10,10 @@ import {
   Divider,
 } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import { formatTime } from "../utilities/time";
+import { getChipColor } from "../utilities/color";
 
 const modalStyle = {
   position: "absolute",
@@ -35,11 +37,10 @@ const IssueModal = ({
   isStarred,
   handleVerifyIssue,
   verifiedCount,
-  getChipColor,
 }) => {
   if (!issue) return null;
 
-  const { title, description, location, timestamp, category } = issue;
+  const { title, description, location, postDate, category } = issue;
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -48,26 +49,25 @@ const IssueModal = ({
         <Typography variant="h5" gutterBottom>
           {title || "Title not specified"}
         </Typography>
-        <Chip label={category || "No category"}
+        <Chip
+          label={category || "No category"}
           size="small"
-          color={getChipColor(category)} 
+          color={getChipColor(category)}
           variant="outlined"
-          sx={{ mb: 2 }} />
+          sx={{ mb: 2 }}
+        />
 
         {/* Description */}
         <Typography variant="body1" gutterBottom>
           {description}
         </Typography>
 
-        {/* Location and timestamp */}
+        {/* Location and post date */}
         <Typography variant="body2" color="text.secondary">
           Location: {location.address || "Not specified"}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Posted on:{" "}
-          {timestamp
-            ? new Date(timestamp).toLocaleString()
-            : "Date not available"}
+          Posted on: {postDate ? formatTime(postDate) : "Date not available"}
         </Typography>
 
         {/* Verified count and star toggle */}
@@ -83,10 +83,16 @@ const IssueModal = ({
             <IconButton onClick={handleVerifyIssue}>
               <CheckCircleOutline color="success" />
             </IconButton>
-            <Typography variant="body2">{verifiedCount} verified by 10 people</Typography>
+            <Typography variant="body2">
+              {verifiedCount} verified by 10 people
+            </Typography>
           </Box>
           <IconButton onClick={handleStarToggle}>
-            {isStarred ? <BookmarkIcon color="primary" /> : <BookmarkBorderIcon />}
+            {isStarred ? (
+              <BookmarkIcon color="primary" />
+            ) : (
+              <BookmarkBorderIcon />
+            )}
           </IconButton>
         </Box>
 
