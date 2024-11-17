@@ -6,7 +6,7 @@ import CustomAppBar from "./components/CustomAppBar";
 import MapArea from "./components/MapArea";
 import IssuesList from "./components/IssuesList";
 import IssueModal from "./components/IssueModal";
-import { fetchIssues } from "./utilities/dbFunctions";
+import { fetchIssues, getSavedIssuesDetails } from "./utilities/dbFunctions";
 
 // Theme configuration
 const lightTheme = createTheme({
@@ -46,6 +46,10 @@ const SafetyApp = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStarred, setIsStarred] = useState(false);
   const [issues, setIssues] = useState([]);
+  const [showSaved, setShowSaved] = useState(false);
+
+  // if showSaved = true, issues = result of savedIssues
+  // if showSaved = false, issues = result of fetchIssues
 
   const handleIssueSelect = (issue) => {
     console.log("Selected issue:", issue);
@@ -68,12 +72,25 @@ const SafetyApp = () => {
     setIsIssuesListExpanded((prev) => !prev);
   };
 
+  // hardcoded userID
+  const userId = "0LXtAr9nEjGzBdXsNWyw";
+
   useEffect(() => {
-    fetchIssues().then((data) => {
-      console.log("Fetched issues:", data);
-      setIssues(data);
-    });
-  }, []);
+    if (!showSaved) {
+      // get all issues
+      fetchIssues().then((data) => {
+        console.log("Fetched issues:", data);
+        setIssues(data);
+      });
+    } else {
+      // get only saved issues
+      getSavedIssuesDetails(userId).then((data) => {
+        console.log("Fetched saved issues:", data);
+        // for every issue, fecth the issue by id and add it to an array, then set issues to that array
+        setIssues(data);
+      });
+    }
+  }, [showSaved]);
 
   return (
     <ThemeProvider theme={lightTheme}>
@@ -122,6 +139,8 @@ const SafetyApp = () => {
           >
             <IssuesList
               issues={issues}
+              showSaved={showSaved}
+              setShowSaved={setShowSaved}
               hoveredIssue={hoveredIssue}
               selectedIssue={selectedIssue}
               handleIssueSelect={handleIssueSelect}

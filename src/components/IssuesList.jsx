@@ -6,6 +6,8 @@ import {
   List,
   useMediaQuery,
   useTheme,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useDrag } from "@use-gesture/react";
@@ -44,6 +46,8 @@ const SwipeHandle = styled(Box)(({ theme }) => ({
 
 const IssuesList = ({
   issues,
+  showSaved,
+  setShowSaved,
   hoveredIssue,
   selectedIssue,
   handleIssueSelect,
@@ -84,6 +88,19 @@ const IssuesList = ({
           <Typography variant="h6" component="div">
             Safety Issues
           </Typography>
+
+          <ToggleButtonGroup
+            color="primary"
+            value={showSaved ? "true" : "false"}
+            exclusive
+            onChange={() => {
+              setShowSaved((prev) => !prev);
+            }}
+            aria-label="Platform"
+          >
+            <ToggleButton value="false">All Safety Issues</ToggleButton>
+            <ToggleButton value="true">Saved Issues</ToggleButton>
+          </ToggleButtonGroup>
         </Box>
       </Box>
       <ScrollableList>

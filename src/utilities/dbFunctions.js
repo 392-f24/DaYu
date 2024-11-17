@@ -220,3 +220,25 @@ export const deleteComment = async (issueId, commentId) => {
     throw error;
   }
 };
+
+// Fetch every issue for a user's saved issues
+export const getSavedIssuesDetails = async (userId) => {
+  try {
+    // Step 1: Get all saved issue references from the user's savedIssues subcollection
+    const savedIssues = await getSavedIssues(userId);
+
+    // Step 2: Map through savedIssues and fetch full issue details for each savedIssue
+    const issuesPromises = savedIssues.map(async (issue) => {
+      const issueId = issue.issueId.id; // Extract issue ID from the savedIssue path
+      return await fetchIssueById(issueId); // Fetch full issue details
+    });
+
+    // Step 3: Resolve all issue promises and return the full list of issue objects
+    const fullIssues = await Promise.all(issuesPromises);
+
+    return fullIssues;
+  } catch (error) {
+    console.error("Error fetching saved issue details:", error);
+    throw error;
+  }
+};
