@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach, beforeEach } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import {
   addIssue,
   deleteIssue,
@@ -37,18 +37,28 @@ describe("Firestore DB Functions", () => {
 
   afterEach(async () => {
     if (commentId) {
-      await deleteComment(issueId);
+      try {
+        console.log("Deleting comment:", commentId);
+        await deleteComment(issueId, commentId);
+      } catch (err) {
+        console.error("Failed to delete comment:", err);
+      }
       commentId = null;
     }
 
     if (issueId) {
-      await deleteIssue(issueId);
+      try {
+        console.log("Deleting issue:", issueId);
+        await deleteIssue(issueId);
+      } catch (err) {
+        console.error("Failed to delete issue:", err);
+      }
       issueId = null;
     }
   });
 
   it("should add an issue to Firestore", async () => {
-    const issueId = await addIssue(testIssue);
+    issueId = await addIssue(testIssue);
     expect(issueId).toBeDefined();
   });
 
@@ -58,5 +68,11 @@ describe("Firestore DB Functions", () => {
     expect(fetchedIssue).toBeDefined();
     expect(fetchedIssue.id).toBe(issueId);
     expect(fetchedIssue.title).toBe(testIssue.title);
+  });
+
+  it("should add a comment to an issue", async () => {
+    issueId = await addIssue(testIssue);
+    commentId = await addComment(issueId, testComment);
+    expect(commentId).toBeDefined();
   });
 });

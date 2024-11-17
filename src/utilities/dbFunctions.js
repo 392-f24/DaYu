@@ -60,10 +60,17 @@ export const updateIssue = async (id, updates) => {
 export const deleteIssue = async (id) => {
   try {
     await deleteDoc(doc(db, "issues", id));
+
+    const deletedDoc = await fetchIssueById(id);
+    if (deletedDoc) {
+      throw new Error("Issue was not deleted successfully");
+    }
   } catch (error) {
     console.error("Error deleting issue: ", error);
     throw error;
   }
+
+  await delay(500);
 };
 
 // add an issue to a user's saved issues
