@@ -45,7 +45,6 @@ describe("Firestore DB Functions", () => {
       }
       commentId = null;
     }
-
     if (issueId) {
       try {
         console.log("Deleting issue:", issueId);
@@ -74,5 +73,37 @@ describe("Firestore DB Functions", () => {
     issueId = await addIssue(testIssue);
     commentId = await addComment(issueId, testComment);
     expect(commentId).toBeDefined();
+  });
+
+  it("should fetch all comments for an issue", async () => {
+    issueId = await addIssue(testIssue);
+    commentId = await addComment(issueId, testComment);
+    const comments = await fetchComments(issueId);
+    expect(Array.isArray(comments)).toBe(true);
+    expect(comments.some((comment) => comment.id === commentId)).toBe(true);
+  });
+
+  it("should increment the comments count", async () => {
+    issueId = await addIssue(testIssue);
+    await incrementCommentsCount(issueId);
+    const updatedIssue = await fetchIssueById(issueId);
+    expect(updatedIssue.commentsCount).toBe(1);
+  });
+
+  it("should decrement the comments count", async () => {
+    issueId = await addIssue(testIssue);
+    await incrementCommentsCount(issueId);
+    await decrementCommentsCount(issueId);
+    const updatedIssue = await fetchIssueById(issueId);
+    expect(updatedIssue.commentsCount).toBe(0);
+  });
+
+  it("should delete a comment by ID", async () => {
+    issueId = await addIssue(testIssue);
+    commentId = await addComment(issueId, testComment);
+    await deleteComment(issueId, commentId);
+    const comments = await fetchComments(issueId);
+    expect(comments.some((comment) => comment.id === commentId)).toBe(false);
+    commentId = null;
   });
 });

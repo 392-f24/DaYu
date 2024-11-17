@@ -11,6 +11,7 @@ import {
   deleteDoc,
   getDoc,
   Timestamp,
+  increment,
 } from "firebase/firestore";
 
 // Add a new issue
@@ -189,7 +190,7 @@ export const incrementCommentsCount = async (issueId) => {
   try {
     const issueRef = doc(db, "issues", issueId);
     await updateDoc(issueRef, {
-      commentsCount: increment(1), // Firestore increment function
+      commentsCount: increment(1),
     });
   } catch (error) {
     console.error("Error incrementing commentsCount: ", error);
