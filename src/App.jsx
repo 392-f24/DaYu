@@ -1,10 +1,11 @@
 // SafetyApp.js
-import React, { useState } from "react";
+import { useState, useRef} from "react";
 import { Box, Container, useMediaQuery } from "@mui/material";
 import { ThemeProvider, createTheme, useTheme } from "@mui/material/styles";
 import CustomAppBar from "./components/CustomAppBar";
 import MapArea from "./components/MapArea";
 import IssuesList from "./components/IssuesList";
+import IssueModal from "./components/IssueModal";
 import { DUMMY_ISSUES } from "./data/dummyData";
 import { getChipColor } from "./utilities/color";
 import { formatTime } from "./utilities/time";
@@ -13,8 +14,9 @@ import { formatTime } from "./utilities/time";
 const lightTheme = createTheme({
   palette: {
     mode: "light",
-    primary: { main: "#3b82f6" },
-    secondary: { main: "#22c55e" },
+    primary: { main: "#3b82f6" }, // blue
+    secondary: { main: "#22c55e" }, // green
+    thirdColor: { main: "#f59e0b" }, // yellow
     background: { default: "#f8fafc", paper: "#ffffff" },
     text: { primary: "#1e293b", secondary: "#64748b" },
     divider: "rgba(0, 0, 0, 0.12)",
@@ -38,15 +40,29 @@ const lightTheme = createTheme({
 const SafetyApp = () => {
   const [hoveredIssue, setHoveredIssue] = useState(null);
   const [selectedIssue, setSelectedIssue] = useState(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.006 });
+  const [mapCenter, setMapCenter] = useState({ lat: 41.8781, lng: -87.6298 });
   const [isIssuesListExpanded, setIsIssuesListExpanded] = useState(false); // State to control layout
-
+  const mapRef = useRef(null); // Reference for the Google Map instance
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStarred, setIsStarred] = useState(false);
 
   const handleIssueSelect = (issue) => {
+    console.log("Selected issue:", issue);
     setSelectedIssue(issue.id);
-    setMapCenter(issue.coordinates);
+    if (mapRef.current) {
+      mapRef.current.panTo(issue.location.coordinates);
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleStarToggle = () => {
+    setIsStarred((prev) => !prev);
   };
 
   const toggleExpand = () => {
@@ -79,6 +95,7 @@ const SafetyApp = () => {
               <MapArea
                 issues={DUMMY_ISSUES}
                 mapCenter={mapCenter}
+                mapRef={mapRef}
                 hoveredIssue={hoveredIssue}
                 selectedIssue={selectedIssue}
               />
@@ -110,6 +127,15 @@ const SafetyApp = () => {
             />
           </Box>
         </Container>
+        <IssueModal
+          issues={DUMMY_ISSUES}
+          open={isModalOpen}
+          onClose={handleModalClose}
+          issue={DUMMY_ISSUES.find((issue) => issue.id === selectedIssue)}
+          handleStarToggle={handleStarToggle}
+          isStarred={isStarred}
+          getChipColor={getChipColor}
+          />
       </Box>
     </ThemeProvider>
   );
