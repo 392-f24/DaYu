@@ -38,17 +38,13 @@ const IssueModal = ({
   issue,
   handleVerifyIssue,
   verifiedCount,
+  saved,
+  onToggleSave,
 }) => {
   if (!issue) return null;
 
   const { title, description, location, postDate, category, isResolved } =
     issue;
-  const [saved, setSaved] = useState(isIssueSavedByUser(userId, issue));
-  const handleOnClick = () => {
-    toggleSavedIssue(userId, issue.id);
-    setSaved((prev) => !prev);
-  };
-
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={modalStyle}>
@@ -98,7 +94,7 @@ const IssueModal = ({
               {verifiedCount} verified by 10 people
             </Typography>
           </Box>
-          <IconButton onClick={handleOnClick}>
+          <IconButton onClick={onToggleSave}>
             {saved ? <BookmarkIcon color="primary" /> : <BookmarkBorderIcon />}
           </IconButton>
         </Box>

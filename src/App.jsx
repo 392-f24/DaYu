@@ -5,7 +5,6 @@ import { ThemeProvider, createTheme, useTheme } from "@mui/material/styles";
 import CustomAppBar from "./components/CustomAppBar";
 import MapArea from "./components/MapArea";
 import IssuesList from "./components/IssuesList";
-import IssueModal from "./components/IssueModal";
 import {
   fetchIssues,
   getSavedIssuesDetails,
@@ -49,7 +48,6 @@ const SafetyApp = () => {
   const mapRef = useRef(null); // Reference for the Google Map instance
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [issues, setIssues] = useState([]);
   const [showSaved, setShowSaved] = useState(false);
 
@@ -62,11 +60,6 @@ const SafetyApp = () => {
     if (mapRef.current) {
       mapRef.current.panTo(issue.location.coordinates);
     }
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
   };
 
   const toggleExpand = () => {
@@ -152,13 +145,6 @@ const SafetyApp = () => {
             />
           </Box>
         </Container>
-        <IssueModal
-          userId={userId}
-          issues={issues}
-          open={isModalOpen}
-          onClose={handleModalClose}
-          issue={issues.find((issue) => issue.id === selectedIssue)}
-        />
       </Box>
     </ThemeProvider>
   );

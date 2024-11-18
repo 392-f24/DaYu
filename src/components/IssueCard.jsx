@@ -8,6 +8,7 @@ import { formatTime } from "../utilities/time";
 import { getChipColor } from "../utilities/color";
 import { isIssueSavedByUser } from "../utilities/issueUtils";
 import { toggleSavedIssue } from "../utilities/dbFunctions";
+import IssueModal from "./IssueModal";
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
@@ -73,30 +74,78 @@ const IssueCard = ({
   handleMouseEnter,
   handleMouseLeave,
   handleSelect,
-}) => (
-  <StyledListItem
-    onMouseEnter={() => handleMouseEnter(issue.id)}
-    onMouseLeave={() => handleMouseLeave()}
-    onClick={() => handleSelect(issue)}
-    sx={{
-      bgcolor: isHovered || isSelected ? "action.hover" : "transparent",
-    }}
-  >
-    <Box sx={{ width: "100%" }}>
-      <IssueTitle
-        title={issue.title}
-        category={issue.category}
-        isSaved={isIssueSavedByUser(userId, issue)}
-        issue={issue}
+}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [saved, setSaved] = useState(isIssueSavedByUser(userId, issue));
+
+  const handleOnClick = () => {
+    toggleSavedIssue(userId, issue.id);
+    setSaved((prev) => !prev);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCardClick = () => {
+    handleSelect(issue);
+    setIsModalOpen(true);
+  };
+
+  return (
+    <Box>
+      <StyledListItem
+        onMouseEnter={() => handleMouseEnter(issue.id)}
+        onMouseLeave={() => handleMouseLeave()}
+        onClick={handleCardClick}
+        sx={{
+          bgcolor: isHovered || isSelected ? "action.hover" : "transparent",
+        }}
+      >
+        <Box sx={{ width: "100%" }}>
+          {/* ISSUE TITLE */}
+          <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Box>
+                <IconButton
+                  aria-label="save issue"
+                  size="small"
+                  onClick={handleOnClick}
+                >
+                  {saved ? (
+                    <Bookmark fontSize="inherit" color="primary" />
+                  ) : (
+                    <BookmarkBorderIcon fontSize="inherit" />
+                  )}
+                </IconButton>
+                {issue.title}
+              </Box>
+              <Chip
+                label={issue.category}
+                size="small"
+                color={getChipColor(issue.category)}
+                variant="outlined"
+              />
+            </Box>
+          </Typography>
+
+          <IssueDetails
+            description={issue.description}
+            address={issue.location.address}
+            postDate={issue.postDate}
+          />
+        </Box>
+      </StyledListItem>
+      <IssueModal
         userId={userId}
-      />
-      <IssueDetails
-        description={issue.description}
-        address={issue.location.address}
-        postDate={issue.postDate}
+        open={isModalOpen}
+        onClose={handleModalClose}
+        issue={issue}
+        saved={saved}
+        onToggleSave={handleOnClick}
       />
     </Box>
-  </StyledListItem>
-);
+  );
+};
 
 export default IssueCard;
