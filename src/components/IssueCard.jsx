@@ -110,7 +110,10 @@ const IssueCard = ({
                 <IconButton
                   aria-label="save issue"
                   size="small"
-                  onClick={handleOnClick}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOnClick();
+                  }}
                 >
                   {saved ? (
                     <Bookmark fontSize="inherit" color="primary" />
