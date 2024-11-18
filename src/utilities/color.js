@@ -1,5 +1,5 @@
 export const getChipColor = (category) => {
-  if (category === "sidewalk") return "primary";
-  if (category === "traffic") return "secondary";
+  if (category === "Sidewalks") return "primary";
+  if (category === "Traffic") return "secondary";
   return "thirdColor";
 };

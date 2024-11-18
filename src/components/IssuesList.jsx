@@ -1,5 +1,14 @@
 import React from "react";
-import { Box, Typography, Paper, List, useMediaQuery, useTheme} from "@mui/material";
+import {
+  Box,
+  Typography,
+  Paper,
+  List,
+  useMediaQuery,
+  useTheme,
+  ToggleButtonGroup,
+  ToggleButton,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useDrag } from "@use-gesture/react";
 import IssueCard from "./IssueCard";
@@ -24,24 +33,26 @@ const ScrollableList = styled(List)(({ theme }) => ({
 }));
 
 const SwipeHandle = styled(Box)(({ theme }) => ({
-    width: "40px",
-    height: "4px",
-    backgroundColor: theme.palette.text.secondary,
-    borderRadius: "2px",
-    position: "absolute",
-    top: "4px", // Positions the handle at the very top of the container
-    left: "50%",
-    transform: "translateX(-50%)",
-    cursor: "pointer", // Indicate that the handle is interactive
-  }));
+  width: "40px",
+  height: "4px",
+  backgroundColor: theme.palette.text.secondary,
+  borderRadius: "2px",
+  position: "absolute",
+  top: "4px", // Positions the handle at the very top of the container
+  left: "50%",
+  transform: "translateX(-50%)",
+  cursor: "pointer", // Indicate that the handle is interactive
+}));
 
 const IssuesList = ({
+  userId,
   issues,
+  showSaved,
+  setShowSaved,
   hoveredIssue,
   selectedIssue,
   handleIssueSelect,
   setHoveredIssue,
-  getChipColor,
   formatTime,
   isExpanded,
   toggleExpand,
@@ -63,17 +74,40 @@ const IssuesList = ({
 
   return (
     <IssuesListContainer elevation={0}>
-      <Box sx={{ position: "relative", padding: "16px 0", borderBottom: 1, borderColor: "divider",  touchAction: "none",}} {...bind()}>
+      <Box
+        sx={{
+          position: "relative",
+          padding: "16px 0",
+          borderBottom: 1,
+          borderColor: "divider",
+          touchAction: "none",
+        }}
+        {...bind()}
+      >
         {isSmallScreen && <SwipeHandle />}
         <Box sx={{ textAlign: "center" }}>
           <Typography variant="h6" component="div">
             Safety Issues
           </Typography>
+
+          <ToggleButtonGroup
+            color="primary"
+            value={showSaved ? "true" : "false"}
+            exclusive
+            onChange={() => {
+              setShowSaved((prev) => !prev);
+            }}
+            aria-label="Platform"
+          >
+            <ToggleButton value="false">All Safety Issues</ToggleButton>
+            <ToggleButton value="true">Saved Issues</ToggleButton>
+          </ToggleButtonGroup>
         </Box>
       </Box>
       <ScrollableList>
         {issues.map((issue) => (
           <IssueCard
+            userId={userId}
             key={issue.id}
             issue={issue}
             isSelected={selectedIssue === issue.id}
@@ -81,8 +115,6 @@ const IssuesList = ({
             handleMouseEnter={setHoveredIssue}
             handleMouseLeave={() => setHoveredIssue(null)}
             handleSelect={handleIssueSelect}
-            getChipColor={getChipColor}
-            formatTime={formatTime}
           />
         ))}
       </ScrollableList>
