@@ -21,51 +21,6 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-const IssueTitle = ({ title, category, isSaved, issue, userId }) => {
-  const [saved, setSaved] = useState(isSaved);
-  const handleOnClick = () => {
-    toggleSavedIssue(userId, issue.id);
-    setSaved((prev) => !prev);
-  };
-  return (
-    <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box>
-          <IconButton
-            aria-label="save issue"
-            size="small"
-            onClick={handleOnClick}
-          >
-            {saved ? (
-              <Bookmark fontSize="inherit" color="primary" />
-            ) : (
-              <BookmarkBorderIcon fontSize="inherit" />
-            )}
-          </IconButton>
-          {title}
-        </Box>
-        <Chip
-          label={category}
-          size="small"
-          color={getChipColor(category)}
-          variant="outlined"
-        />
-      </Box>
-    </Typography>
-  );
-};
-
-const IssueDetails = ({ description, address, postDate }) => (
-  <Typography component="div" variant="body2" color="text.secondary">
-    <Box sx={{ mb: 1 }}>{description}</Box>
-    <Box sx={{ display: "flex", gap: 1, fontSize: "12px" }}>
-      <span>{address}</span>
-      <span>•</span>
-      <span>{formatTime(postDate)}</span>
-    </Box>
-  </Typography>
-);
-
 const IssueCard = ({
   userId,
   issue,
@@ -132,11 +87,14 @@ const IssueCard = ({
             </Box>
           </Typography>
 
-          <IssueDetails
-            description={issue.description}
-            address={issue.location.address}
-            postDate={issue.postDate}
-          />
+          <Typography component="div" variant="body2" color="text.secondary">
+            <Box sx={{ mb: 1 }}>{issue.description}</Box>
+            <Box sx={{ display: "flex", gap: 1, fontSize: "12px" }}>
+              <span>{issue.location.address}</span>
+              <span>•</span>
+              <span>{formatTime(issue.postDate)}</span>
+            </Box>
+          </Typography>
         </Box>
       </StyledListItem>
       <IssueModal
