@@ -318,7 +318,7 @@ export const toggleSavedIssue = async (userId, issueId) => {
   }
 };
 
-// Add an issue to a user's verified issues and update the verifiedBy array in the issue doc -- UNTESTED
+// Add an issue to a user's verified issues and update the verifiedBy array in the issue doc
 export const addVerifiedIssue = async (userId, issueId) => {
   try {
     const verifiedIssuesRef = collection(db, `users/${userId}/verifiedIssues`);
@@ -355,7 +355,7 @@ export const addVerifiedIssue = async (userId, issueId) => {
   }
 };
 
-// Remove an issue from a user's verified issues -- UNTESTED
+// Remove an issue from a user's verified issues
 export const removeVerifiedIssue = async (userId, issueId) => {
   try {
     const verifiedIssuesRef = collection(db, `users/${userId}/verifiedIssues`);
@@ -380,7 +380,7 @@ export const removeVerifiedIssue = async (userId, issueId) => {
   }
 };
 
-// Get all of a user's verified issues -- UNTESTED
+// Get all of a user's verified issues
 export const getVerifiedIssues = async (userId) => {
   try {
     const verifiedIssuesRef = collection(db, `users/${userId}/verifiedIssues`);
@@ -398,7 +398,7 @@ export const getVerifiedIssues = async (userId) => {
   }
 };
 
-// Fetch every issue for a user's verified issues -- UNTESTED
+// Fetch every issue for a user's verified issues
 export const getVerifiedIssuesDetails = async (userId) => {
   try {
     const verifiedIssues = await getVerifiedIssues(userId);
@@ -417,7 +417,7 @@ export const getVerifiedIssuesDetails = async (userId) => {
   }
 };
 
-// Toggle verified status of an issue for a user -- UNTESTED
+// Toggle verified status of an issue for a user
 export const toggleVerifiedIssue = async (userId, issueId) => {
   try {
     const verifiedIssuesRef = collection(db, `users/${userId}/verifiedIssues`);
@@ -465,6 +465,29 @@ export const toggleVerifiedIssue = async (userId, issueId) => {
     }
   } catch (error) {
     console.error("Error toggling verified issue:", error);
+    throw error;
+  }
+};
+
+export const getVerificationCount = async (issueId) => {
+  try {
+    const issue = await fetchIssueById(issueId);
+    const verificationCount = (issue.verifiedBy || []).length;
+    return verificationCount;
+  } catch (error) {
+    console.error("Error getting verification count:", error);
+    throw error;
+  }
+};
+
+export const hasUserVerifiedIssue = async (userId, issueId) => {
+  try {
+    const issue = await fetchIssueById(issueId);
+    const userPath = `users/${userId}`;
+    const verifiedByPaths = (issue.verifiedBy || []).map((ref) => ref.path);
+    return verifiedByPaths.includes(userPath);
+  } catch (error) {
+    console.error("Error checking if user has verified the issue:", error);
     throw error;
   }
 };

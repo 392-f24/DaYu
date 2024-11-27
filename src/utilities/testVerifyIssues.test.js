@@ -9,6 +9,8 @@ import {
   getVerifiedIssues,
   getVerifiedIssuesDetails,
   toggleVerifiedIssue,
+  getVerificationCount,
+  hasUserVerifiedIssue,
 } from "./dbFunctions.js";
 
 describe("Verified Issues Functions", () => {
@@ -117,5 +119,38 @@ describe("Verified Issues Functions", () => {
     updatedIssue = await fetchIssueById(issueId);
     verifiedByPaths = (updatedIssue.verifiedBy || []).map((ref) => ref.path);
     expect(verifiedByPaths).not.toContain(userPath);
+  });
+
+  it("should get the correct verification count for an issue", async () => {
+    let count = await getVerificationCount(issueId);
+    expect(count).toBe(0);
+
+    await addVerifiedIssue(userId, issueId);
+
+    count = await getVerificationCount(issueId);
+    expect(count).toBe(1);
+
+    const anotherUserId = "testUserId2";
+    await addVerifiedIssue(anotherUserId, issueId);
+
+    count = await getVerificationCount(issueId);
+    expect(count).toBe(2);
+
+    await removeVerifiedIssue(anotherUserId, issueId);
+  });
+
+  it("should correctly determine if a user has verified an issue", async () => {
+    let hasVerified = await hasUserVerifiedIssue(userId, issueId);
+    expect(hasVerified).toBe(false);
+
+    await addVerifiedIssue(userId, issueId);
+
+    hasVerified = await hasUserVerifiedIssue(userId, issueId);
+    expect(hasVerified).toBe(true);
+
+    await removeVerifiedIssue(userId, issueId);
+
+    hasVerified = await hasUserVerifiedIssue(userId, issueId);
+    expect(hasVerified).toBe(false);
   });
 });
