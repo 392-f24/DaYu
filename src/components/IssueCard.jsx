@@ -1,9 +1,18 @@
-// IssueCard.js
 import React, { useState } from "react";
-import { Box, Chip, ListItem, Typography, IconButton } from "@mui/material";
+import {
+  Box,
+  Chip,
+  ListItem,
+  Typography,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Bookmark from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
+import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalk";
 import { formatTime } from "../utilities/time";
 import { getChipColor } from "../utilities/color";
 import { isIssueSavedByUser } from "../utilities/issueUtils";
@@ -20,6 +29,13 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
     backgroundColor: theme.palette.action.hover,
   },
 }));
+
+// Mode icon mapping
+const MODE_ICONS = {
+  Driver: DirectionsCarIcon,
+  Cyclist: DirectionsBikeIcon,
+  Pedestrian: DirectionsWalkIcon,
+};
 
 const IssueCard = ({
   userId,
@@ -47,6 +63,26 @@ const IssueCard = ({
     setIsModalOpen(true);
   };
 
+  // Render mode icons
+  const renderModeIcons = () => {
+    // Ensure issue.mode is an array before mapping
+    const modes = Array.isArray(issue.mode) ? issue.mode : [];
+
+    return modes.map((mode) => {
+      const ModeIcon = MODE_ICONS[mode];
+      return ModeIcon ? (
+        <Tooltip key={mode} title={mode}>
+          <Box
+            component="span"
+            sx={{ display: "inline-flex", alignItems: "center", mr: 0.5 }}
+          >
+            <ModeIcon fontSize="small" color="action" />
+          </Box>
+        </Tooltip>
+      ) : null;
+    });
+  };
+
   return (
     <Box>
       <StyledListItem
@@ -58,9 +94,15 @@ const IssueCard = ({
         }}
       >
         <Box sx={{ width: "100%" }}>
-          {/* ISSUE TITLE */}
+          {/* ISSUE TITLE and BOOKMARK */}
           <Typography component="div" variant="subtitle1">
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               {issue.title}
               <IconButton
                 aria-label="save issue"
@@ -79,12 +121,22 @@ const IssueCard = ({
             </Box>
           </Typography>
 
-          <Chip
-            label={issue.category}
-            size="small"
-            color={getChipColor(issue.category)}
-            variant="outlined"
-          />
+          {/* MODE ICONS and CATEGORY CHIP */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <Chip
+              label={issue.category}
+              size="small"
+              variant="outlined"
+              color="primary"
+            />
+            {/* <Chip
+              label={issue.category}
+              size="small"
+              color={getChipColor(issue.category)}
+              variant="outlined"
+            /> */}
+            {renderModeIcons()}
+          </Box>
 
           <Typography component="div" variant="body2" color="text.secondary">
             <Box
