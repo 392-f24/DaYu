@@ -119,7 +119,7 @@ const MapArea = ({ issues, mapCenter, mapRef, handleIssueSelect }) => {
               position={selectedMarker.location.coordinates}
               onCloseClick={handleInfoWindowClose}
             >
-              <Box sx={{ p: 2, maxWidth: 250 }}>
+              <Box sx={{ p: 2, maxWidth: 300 }}>
                 <Box
                   sx={{
                     display: "flex",
