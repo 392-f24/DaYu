@@ -53,6 +53,78 @@ const IssueModal = ({
   
   const { title, description, location, postDate, category, isResolved } =
     issue;
+
+  useEffect(() => {
+    if (open) {
+      setLoading(true);
+      hasUserVerifiedIssue(userId, issue.id).then((isVerified) => {
+        setVerified(isVerified);
+      });
+      
+      // Get the verification count
+      getVerificationCount(issue.id).then((count) => {
+        setLocalVerifiedCount(count);
+      });
+
+      
+      fetchComments(issue.id)
+        .then(async (fetchedComments) => {
+          // Fetch usernames for each comment
+          const updatedComments = await Promise.all(
+            fetchedComments.map(async (comment) => {
+              const userData = await fetchUserData(comment.user);
+              const formattedDate = comment.date instanceof Date
+                ? comment.date
+                : comment.date?.toDate();
+          
+              return {
+                ...comment,
+                username: `${userData?.firstname} ${userData?.lastname}`,
+                formattedDate,
+              };
+            })
+          );
+          //console.log("Updated comments:", updatedComments);
+          setComments(updatedComments);
+          setLoading(false);
+        })
+        .catch(console.error);
+        setLoading(false);
+    }
+  }, [open, userId, issue.id]);
+
+  const handleVerifyToggle = async () => {
+    const newStatus = !verified;
+    try {
+      await toggleVerifiedIssue(userId, issue.id);
+      setVerified(newStatus);
+      // Update the verification count
+      const updatedCount = await getVerificationCount(issue.id);
+      setLocalVerifiedCount(updatedCount);
+    } catch (error) {
+      console.error("Error toggling verification:", error);
+    }
+  };
+
+  const handlePostComment = () => {
+    if (!newComment.trim()) return;
+  
+    const commentData = {
+      comment: newComment,
+      date: new Date(),
+      user: userId,
+    };
+  
+    addComment(issue.id, commentData)
+      .then(() => {
+        setComments([...comments, commentData]);
+        console.log("Posted new comment:", commentData);
+        console.log("Updated comments list:", updatedComments);
+        setNewComment("");
+      })
+      .catch(console.error);
+  };
+
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={modalStyle}>
