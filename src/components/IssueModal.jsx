@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -8,6 +8,8 @@ import {
   Button,
   TextField,
   Divider,
+  Avatar,
+  Stack,
 } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -15,7 +17,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { formatTime } from "../utilities/time";
 import { getChipColor } from "../utilities/color";
 import { isIssueSavedByUser } from "../utilities/issueUtils";
-import { toggleSavedIssue } from "../utilities/dbFunctions";
+import { toggleVerifiedIssue, getVerificationCount, hasUserVerifiedIssue, fetchComments, addComment, fetchUserData } from "../utilities/dbFunctions";
 
 const modalStyle = {
   position: "absolute",
@@ -42,6 +44,9 @@ const IssueModal = ({
   onToggleSave,
 }) => {
   if (!issue) return null;
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { title, description, location, postDate, category, isResolved } =
     issue;
@@ -101,18 +106,37 @@ const IssueModal = ({
 
         {/* Comments section */}
         <Divider sx={{ my: 2 }} />
-        <Typography variant="h6" gutterBottom>
-          Comments
-        </Typography>
+        <Typography variant="h6" gutterBottom>Comments</Typography>
+
+        <Box sx={{ mb: 2 }}>
+          {comments.map((c, idx) => (
+            <Box key={idx} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <Avatar sx={{ mr: 1 }} />
+              <Box>
+                <Typography variant="body2" color="text.primary" fontWeight="bold">
+                  {c.username}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  {c.comment}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic" }}>
+                  {c.formattedDate ? formatTime(c.formattedDate) :  ""}
+                </Typography>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+
         <TextField
           fullWidth
           variant="outlined"
           placeholder="Add a comment"
           multiline
           rows={3}
-          sx={{ mb: 2 }}
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
         />
-        <Button variant="contained" fullWidth>
+        <Button variant="contained" fullWidth onClick={handlePostComment}>
           Post Comment
         </Button>
       </Box>
