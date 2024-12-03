@@ -5,64 +5,46 @@ import { styled } from "@mui/material/styles";
 
 const mapStyle = [
   {
-    "featureType": "poi",
-    "elementType": "all",
-    "stylers": [{ "visibility": "off" }]
+    featureType: "poi",
+    elementType: "all",
+    stylers: [{ visibility: "off" }],
   },
   {
-    "featureType": "transit",
-    "elementType": "all",
-    "stylers": [{ "visibility": "off" }]
+    featureType: "transit",
+    elementType: "all",
+    stylers: [{ visibility: "off" }],
   },
   {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#ffffff" },
-      { "weight": 1 }
-    ]
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ visibility: "on" }, { color: "#ffffff" }, { weight: 1 }],
   },
   {
-    "featureType": "road",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "on" }]
+    featureType: "road",
+    elementType: "labels",
+    stylers: [{ visibility: "on" }],
   },
   {
-    "featureType": "administrative",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "on" }]
+    featureType: "administrative",
+    elementType: "labels",
+    stylers: [{ visibility: "on" }],
   },
   {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#ffcc00" },
-      { "weight": 1 }
-    ]
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ visibility: "on" }, { color: "#ffcc00" }, { weight: 1 }],
   },
   {
-    "featureType": "road.arterial",
-    "elementType": "geometry",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#cccccc" },
-      { "weight": 1 }
-    ]
+    featureType: "road.arterial",
+    elementType: "geometry",
+    stylers: [{ visibility: "on" }, { color: "#cccccc" }, { weight: 1 }],
   },
   {
-    "featureType": "road.local",
-    "elementType": "geometry",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#e3e3e3" },
-      { "weight": 1 }
-    ]
-  }
-]
-
-
+    featureType: "road.local",
+    elementType: "geometry",
+    stylers: [{ visibility: "on" }, { color: "#e3e3e3" }, { weight: 1 }],
+  },
+];
 
 const MapContainer = styled(Paper)(({ theme }) => ({
   height: "100%",
@@ -73,7 +55,13 @@ const MapContainer = styled(Paper)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
 }));
 
-const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => {
+const MapArea = ({
+  issues,
+  mapCenter,
+  mapRef,
+  hoveredIssue,
+  selectedIssue,
+}) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [delayComplete, setDelayComplete] = useState(false);
 
@@ -92,7 +80,9 @@ const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => 
 
   return (
     <MapContainer elevation={0}>
-      <LoadScriptNext googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+      <LoadScriptNext
+        googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+      >
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={mapCenter}
