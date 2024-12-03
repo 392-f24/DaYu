@@ -48,6 +48,9 @@ const IssueModal = ({
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [verified, setVerified] = useState(issue.verifiedBy?.includes(userId));
+  const [localVerifiedCount, setLocalVerifiedCount] = useState(verifiedCount);
+  
   const { title, description, location, postDate, category, isResolved } =
     issue;
   return (
@@ -82,7 +85,7 @@ const IssueModal = ({
           Resolved: {isResolved ? "Yes" : "No"}
         </Typography>
 
-        {/* Verified count and star toggle */}
+        {/* Verified count and saved toggle */}
         <Box
           sx={{
             display: "flex",
@@ -92,11 +95,11 @@ const IssueModal = ({
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton onClick={handleVerifyIssue}>
-              <CheckCircleOutline color="success" />
+            <IconButton onClick={handleVerifyToggle}>
+              <CheckCircleOutline color={verified ? "success" : "disabled"} />
             </IconButton>
             <Typography variant="body2">
-              {verifiedCount} verified by 10 people
+              Verified by {localVerifiedCount}
             </Typography>
           </Box>
           <IconButton onClick={onToggleSave}>
