@@ -113,8 +113,7 @@ const SafetyApp = () => {
                 issues={issues}
                 mapCenter={mapCenter}
                 mapRef={mapRef}
-                hoveredIssue={hoveredIssue}
-                selectedIssue={selectedIssue}
+                handleIssueSelect={handleIssueSelect}
               />
             </Box>
           )}
