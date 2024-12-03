@@ -353,3 +353,178 @@ export const toggleSavedIssue = async (userId, issueId) => {
     throw error;
   }
 };
+
+
+// Add an issue to a user's verified issues and update the verifiedBy array in the issue doc
+export const addVerifiedIssue = async (userId, issueId) => {
+  try {
+    const verifiedIssuesRef = collection(db, `users/${userId}/verifiedIssues`);
+    const issueRef = doc(db, "issues", issueId);
+    const userRef = doc(db, "users", userId);
+
+    // Check if the issue is already verified by the user
+    const q = query(verifiedIssuesRef, where("issueId", "==", issueRef));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      console.log(`Issue ${issueId} is already verified by user ${userId}.`);
+      return null;
+    }
+
+    const newVerifiedIssue = {
+      issueId: issueRef,
+      verifiedDate: Timestamp.now(),
+    };
+    await addDoc(verifiedIssuesRef, newVerifiedIssue);
+
+    await updateDoc(issueRef, {
+      verifiedBy: arrayUnion(userRef),
+    });
+
+    console.log(`Issue ${issueId} successfully verified by user ${userId}.`);
+    return { status: "added", issueId };
+  } catch (error) {
+    console.error(
+      "Error adding verified issue and updating verifiedBy array:",
+      error
+    );
+    throw error;
+  }
+};
+
+// Remove an issue from a user's verified issues
+export const removeVerifiedIssue = async (userId, issueId) => {
+  try {
+    const verifiedIssuesRef = collection(db, `users/${userId}/verifiedIssues`);
+    const issueRef = doc(db, "issues", issueId);
+    const userRef = doc(db, "users", userId);
+
+    const q = query(verifiedIssuesRef, where("issueId", "==", issueRef));
+
+    const querySnapshot = await getDocs(q);
+    const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+
+    await Promise.all(deletePromises);
+
+    await updateDoc(issueRef, {
+      verifiedBy: arrayRemove(userRef),
+    });
+
+    console.log(`Issue ${issueId} successfully unverified by user ${userId}.`);
+  } catch (error) {
+    console.error("Error removing verified issue:", error);
+    throw error;
+  }
+};
+
+// Get all of a user's verified issues
+export const getVerifiedIssues = async (userId) => {
+  try {
+    const verifiedIssuesRef = collection(db, `users/${userId}/verifiedIssues`);
+    const querySnapshot = await getDocs(verifiedIssuesRef);
+
+    const verifiedIssues = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return verifiedIssues;
+  } catch (error) {
+    console.error("Error retrieving verified issues:", error);
+    throw error;
+  }
+};
+
+// Fetch every issue for a user's verified issues
+export const getVerifiedIssuesDetails = async (userId) => {
+  try {
+    const verifiedIssues = await getVerifiedIssues(userId);
+
+    const issuesPromises = verifiedIssues.map(async (issue) => {
+      const issueId = issue.issueId.id;
+      return await fetchIssueById(issueId);
+    });
+
+    const fullIssues = await Promise.all(issuesPromises);
+
+    return fullIssues;
+  } catch (error) {
+    console.error("Error fetching verified issue details:", error);
+    throw error;
+  }
+};
+
+// Toggle verified status of an issue for a user
+export const toggleVerifiedIssue = async (userId, issueId) => {
+  try {
+    const verifiedIssuesRef = collection(db, `users/${userId}/verifiedIssues`);
+    const issueRef = doc(db, "issues", issueId);
+    const userRef = doc(db, "users", userId);
+
+    const q = query(verifiedIssuesRef, where("issueId", "==", issueRef));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      console.log(
+        `Removing issue ${issueId} from user ${userId}'s verified issues.`
+      );
+
+      const deletePromises = querySnapshot.docs.map((doc) =>
+        deleteDoc(doc.ref)
+      );
+      await Promise.all(deletePromises);
+
+      await updateDoc(issueRef, {
+        verifiedBy: arrayRemove(userRef),
+      });
+
+      console.log(
+        `Issue ${issueId} successfully unverified by user ${userId}.`
+      );
+      return { status: "removed", issueId };
+    } else {
+      console.log(
+        `Adding issue ${issueId} to user ${userId}'s verified issues.`
+      );
+
+      const newVerifiedIssue = {
+        issueId: issueRef,
+        verifiedDate: Timestamp.now(),
+      };
+      await addDoc(verifiedIssuesRef, newVerifiedIssue);
+
+      await updateDoc(issueRef, {
+        verifiedBy: arrayUnion(userRef),
+      });
+
+      console.log(`Issue ${issueId} successfully verified by user ${userId}.`);
+      return { status: "added", issueId };
+    }
+  } catch (error) {
+    console.error("Error toggling verified issue:", error);
+    throw error;
+  }
+};
+
+export const getVerificationCount = async (issueId) => {
+  try {
+    const issue = await fetchIssueById(issueId);
+    const verificationCount = (issue.verifiedBy || []).length;
+    return verificationCount;
+  } catch (error) {
+    console.error("Error getting verification count:", error);
+    throw error;
+  }
+};
+
+export const hasUserVerifiedIssue = async (userId, issueId) => {
+  try {
+    const issue = await fetchIssueById(issueId);
+    const userPath = `users/${userId}`;
+    const verifiedByPaths = (issue.verifiedBy || []).map((ref) => ref.path);
+    return verifiedByPaths.includes(userPath);
+  } catch (error) {
+    console.error("Error checking if user has verified the issue:", error);
+    throw error;
+  }
+};
