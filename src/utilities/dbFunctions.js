@@ -170,13 +170,21 @@ export const fetchIssueById = async (id) => {
   }
 };
 
-// Add a new comment to an issue -- UNTESTED
-export const addComment = async (issueId, comment) => {
+// Add a new comment to an issue
+export const addComment = async (userId, issueId, commentText) => {
   try {
+    const comment = {
+      comment: commentText,
+      date: Timestamp.now(),
+      user: `/users/${userId}`,
+    };
+
     const commentRef = await addDoc(
       collection(db, "issues", issueId, "comments"),
       comment
     );
+
+    console.log("Comment added with ID: ", commentRef.id);
     return commentRef.id;
   } catch (error) {
     console.error("Error adding comment: ", error);
@@ -184,7 +192,7 @@ export const addComment = async (issueId, comment) => {
   }
 };
 
-// Fetch all comments for an issue -- UNTESTED
+// Fetch all comments for an issue
 export const fetchComments = async (issueId) => {
   try {
     const q = collection(db, "issues", issueId, "comments");
@@ -193,6 +201,7 @@ export const fetchComments = async (issueId) => {
     querySnapshot.forEach((doc) => {
       comments.push({ id: doc.id, ...doc.data() });
     });
+    console.log(comments);
     return comments;
   } catch (error) {
     console.error("Error fetching comments: ", error);
@@ -213,7 +222,7 @@ export const incrementCommentsCount = async (issueId) => {
   }
 };
 
-// Decrement commentsCount when a comment is deleted -- UNTESTED
+// Decrement commentsCount when a comment is deleted
 export const decrementCommentsCount = async (issueId) => {
   try {
     const issueRef = doc(db, "issues", issueId);
@@ -226,7 +235,7 @@ export const decrementCommentsCount = async (issueId) => {
   }
 };
 
-// Delete a comment by ID -- UNTESTED
+// Delete a comment by ID
 export const deleteComment = async (issueId, commentId) => {
   try {
     await deleteDoc(doc(db, "issues", issueId, "comments", commentId));
