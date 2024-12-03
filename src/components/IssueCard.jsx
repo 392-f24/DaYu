@@ -13,20 +13,24 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
 import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalk";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { formatTime } from "../utilities/time";
 import { getChipColor } from "../utilities/color";
 import { isIssueSavedByUser } from "../utilities/issueUtils";
 import { toggleSavedIssue } from "../utilities/dbFunctions";
 import IssueModal from "./IssueModal";
 
-const StyledListItem = styled(ListItem)(({ theme }) => ({
+const StyledListItem = styled(ListItem)(({ theme, $isResolved }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
   cursor: "pointer",
-  transition: theme.transitions.create(["background-color"], {
+  transition: theme.transitions.create(["background-color", "opacity"], {
     duration: theme.transitions.duration.shorter,
   }),
+  opacity: $isResolved ? 0.6 : 1,
   "&:hover": {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: $isResolved
+      ? theme.palette.action.hover
+      : theme.palette.action.hover,
   },
 }));
 
@@ -86,6 +90,7 @@ const IssueCard = ({
   return (
     <Box>
       <StyledListItem
+        $isResolved={issue.isResolved}
         onMouseEnter={() => handleMouseEnter(issue.id)}
         onMouseLeave={() => handleMouseLeave()}
         onClick={handleCardClick}
@@ -104,20 +109,31 @@ const IssueCard = ({
               }}
             >
               {issue.title}
-              <IconButton
-                aria-label="save issue"
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOnClick();
-                }}
-              >
-                {saved ? (
-                  <Bookmark fontSize="inherit" color="primary" />
-                ) : (
-                  <BookmarkBorderIcon fontSize="inherit" />
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                {issue.isResolved && (
+                  <Tooltip title="Resolved">
+                    <CheckCircleOutlineIcon
+                      color="success"
+                      fontSize="small"
+                      sx={{ mr: 1 }}
+                    />
+                  </Tooltip>
                 )}
-              </IconButton>
+                <IconButton
+                  aria-label="save issue"
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOnClick();
+                  }}
+                >
+                  {saved ? (
+                    <Bookmark fontSize="inherit" color="primary" />
+                  ) : (
+                    <BookmarkBorderIcon fontSize="inherit" />
+                  )}
+                </IconButton>
+              </Box>
             </Box>
           </Typography>
 
@@ -129,12 +145,6 @@ const IssueCard = ({
               variant="outlined"
               color="primary"
             />
-            {/* <Chip
-              label={issue.category}
-              size="small"
-              color={getChipColor(issue.category)}
-              variant="outlined"
-            /> */}
             {renderModeIcons()}
           </Box>
 
@@ -149,7 +159,14 @@ const IssueCard = ({
             >
               {issue.description}
             </Box>
-            <Box sx={{ display: "flex", gap: 1, fontSize: "12px" }}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1,
+                fontSize: "12px",
+                alignItems: "center",
+              }}
+            >
               <span>{issue.location.address.split(",")[0]}</span>
               <span>•</span>
               <span>{formatTime(issue.postDate)}</span>
