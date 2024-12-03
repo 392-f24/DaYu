@@ -20,15 +20,15 @@ import { isIssueSavedByUser } from "../utilities/issueUtils";
 import { toggleSavedIssue } from "../utilities/dbFunctions";
 import IssueModal from "./IssueModal";
 
-const StyledListItem = styled(ListItem)(({ theme, $isResolved }) => ({
+const StyledListItem = styled(ListItem)(({ theme, isResolved }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
   cursor: "pointer",
   transition: theme.transitions.create(["background-color", "opacity"], {
     duration: theme.transitions.duration.shorter,
   }),
-  opacity: $isResolved ? 0.6 : 1,
+  opacity: isResolved ? 0.6 : 1,
   "&:hover": {
-    backgroundColor: $isResolved
+    backgroundColor: isResolved
       ? theme.palette.action.hover
       : theme.palette.action.hover,
   },
@@ -90,7 +90,7 @@ const IssueCard = ({
   return (
     <Box>
       <StyledListItem
-        $isResolved={issue.isResolved}
+        isResolved={issue.isResolved}
         onMouseEnter={() => handleMouseEnter(issue.id)}
         onMouseLeave={() => handleMouseLeave()}
         onClick={handleCardClick}
