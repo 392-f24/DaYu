@@ -59,38 +59,46 @@ const IssueCard = ({
       >
         <Box sx={{ width: "100%" }}>
           {/* ISSUE TITLE */}
-          <Typography component="div" variant="subtitle1" sx={{ mb: 1 }}>
+          <Typography component="div" variant="subtitle1">
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Box>
-                <IconButton
-                  aria-label="save issue"
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleOnClick();
-                  }}
-                >
-                  {saved ? (
-                    <Bookmark fontSize="inherit" color="primary" />
-                  ) : (
-                    <BookmarkBorderIcon fontSize="inherit" />
-                  )}
-                </IconButton>
-                {issue.title}
-              </Box>
-              <Chip
-                label={issue.category}
+              {issue.title}
+              <IconButton
+                aria-label="save issue"
                 size="small"
-                color={getChipColor(issue.category)}
-                variant="outlined"
-              />
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOnClick();
+                }}
+              >
+                {saved ? (
+                  <Bookmark fontSize="inherit" color="primary" />
+                ) : (
+                  <BookmarkBorderIcon fontSize="inherit" />
+                )}
+              </IconButton>
             </Box>
           </Typography>
 
+          <Chip
+            label={issue.category}
+            size="small"
+            color={getChipColor(issue.category)}
+            variant="outlined"
+          />
+
           <Typography component="div" variant="body2" color="text.secondary">
-            <Box sx={{ mb: 1 }}>{issue.description}</Box>
+            <Box
+              sx={{
+                mb: 1,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {issue.description}
+            </Box>
             <Box sx={{ display: "flex", gap: 1, fontSize: "12px" }}>
-              <span>{issue.location.address}</span>
+              <span>{issue.location.address.split(",")[0]}</span>
               <span>•</span>
               <span>{formatTime(issue.postDate)}</span>
             </Box>
