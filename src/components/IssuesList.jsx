@@ -28,6 +28,8 @@ const categories = [
 ];
 
 const IssuesListContainer = styled(Paper)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
   height: "100%",
   backgroundColor: theme.palette.background.paper,
   borderRadius: theme.shape.borderRadius,
@@ -36,10 +38,10 @@ const IssuesListContainer = styled(Paper)(({ theme }) => ({
 }));
 
 const ScrollableList = styled(List)(({ theme }) => ({
-  height: "calc(100% - 56px)",
+  flexGrow: 1,
   overflowY: "auto",
   scrollbarWidth: "none", // For Firefox
-  msOverflowStyle: "none", // For Internet Explorer and Edge
+  msOverflowStyle: "none", // For IE and Edge
 
   "&::-webkit-scrollbar": {
     display: "none", // For Chrome, Safari, and other WebKit browsers
