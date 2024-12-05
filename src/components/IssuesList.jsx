@@ -130,6 +130,21 @@ const IssuesList = ({
     return modeMatch && categoryMatch && resolvedMatch;
   });
 
+  // Sort issues by title
+  filteredIssues.sort((a, b) => {
+    return a.title.localeCompare(b.title);
+  });
+
+  //Sort issues by verifiedBy length?
+  // filteredIssues.sort((a, b) => {
+  //   return b.verifiedBy.length - a.verifiedBy.length;
+  // });
+
+  // Push resolved issues to the bottom
+  filteredIssues.sort((a, b) => {
+    return a.isResolved - b.isResolved;
+  });
+
   //console.log("Filtered issues:", filteredIssues);
 
   // Set up the swipe gesture on the title
