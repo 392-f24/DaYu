@@ -17,7 +17,14 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { formatTime } from "../utilities/time";
 import { getChipColor } from "../utilities/color";
 import { isIssueSavedByUser } from "../utilities/issueUtils";
-import { toggleVerifiedIssue, getVerificationCount, hasUserVerifiedIssue, fetchComments, addComment, fetchUserData } from "../utilities/dbFunctions";
+import {
+  toggleVerifiedIssue,
+  getVerificationCount,
+  hasUserVerifiedIssue,
+  fetchComments,
+  addComment,
+  fetchUserData,
+} from "../utilities/dbFunctions";
 
 const modalStyle = {
   position: "absolute",
@@ -50,7 +57,7 @@ const IssueModal = ({
 
   const [verified, setVerified] = useState(issue.verifiedBy?.includes(userId));
   const [localVerifiedCount, setLocalVerifiedCount] = useState(verifiedCount);
-  
+
   const { title, description, location, postDate, category, isResolved } =
     issue;
 
@@ -59,7 +66,7 @@ const IssueModal = ({
   useEffect(() => {
     if (open) {
       setLoading(true);
-  
+
       // Fetch user info and comments
       Promise.all([
         fetchUserData(userId),
@@ -71,24 +78,23 @@ const IssueModal = ({
           setUserInfo(user); // Store user's info
           setVerified(isVerified);
           setLocalVerifiedCount(count);
-  
+
           const updatedComments = fetchedComments.map((comment) => ({
             ...comment,
-            username: `${user?.firstname} ${user?.lastname}`,
-            formattedDate: comment.date instanceof Date
-              ? comment.date
-              : comment.date?.toDate(),
+            formattedDate:
+              comment.date instanceof Date
+                ? comment.date
+                : comment.date?.toDate(),
           }));
-  
+
           updatedComments.sort((a, b) => a.formattedDate - b.formattedDate);
-  
+
           setComments(updatedComments);
         })
         .catch(console.error)
         .finally(() => setLoading(false));
     }
   }, [open, userId, issue.id]);
-    
 
   const handleVerifyToggle = async () => {
     const newStatus = !verified;
@@ -105,7 +111,7 @@ const IssueModal = ({
 
   const handlePostComment = () => {
     if (!newComment.trim()) return;
-  
+
     const commentData = {
       comment: newComment,
       date: new Date(),
@@ -113,7 +119,7 @@ const IssueModal = ({
       username: `${userInfo?.firstname} ${userInfo?.lastname}`,
       formattedDate: new Date(),
     };
-  
+
     addComment(issue.id, commentData)
       .then(() => {
         setComments((prevComments) => [...prevComments, commentData]);
@@ -121,7 +127,6 @@ const IssueModal = ({
       })
       .catch(console.error);
   };
-  
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -179,41 +184,62 @@ const IssueModal = ({
 
         {/* Comments section */}
         <Divider sx={{ my: 1 }} />
-        <Typography variant="h6" gutterBottom>Comments</Typography>
+        <Typography variant="h6" gutterBottom>
+          Comments
+        </Typography>
 
         <Box
-  sx={{
-    maxHeight: 300, // Set the height limit for the comments section
-    overflowY: "auto", // Enable vertical scrolling
-    mb: 2,
-    p: 1, // Optional padding for better spacing
-    border: "1px solid #ccc", // Optional border for visual clarity
-    borderRadius: "4px",
-  }}
->
-  {comments.length > 0 ? (
-    comments.map((c, idx) => (
-      <Box key={idx} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <Avatar sx={{ mr: 1 }} />
-        <Box>
-          <Typography variant="body2" color="text.primary" fontWeight="bold">
-            {c.username}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-            {c.comment}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic" }}>
-            {c.formattedDate ? formatTime(c.formattedDate) : ""}
-          </Typography>
+          sx={{
+            maxHeight: 300, // Set the height limit for the comments section
+            overflowY: "auto", // Enable vertical scrolling
+            mb: 2,
+            p: 1, // Optional padding for better spacing
+            border: "1px solid #ccc", // Optional border for visual clarity
+            borderRadius: "4px",
+          }}
+        >
+          {comments.length > 0 ? (
+            comments.map((c, idx) => (
+              <Box
+                key={idx}
+                sx={{ display: "flex", alignItems: "center", mb: 2 }}
+              >
+                <Avatar sx={{ mr: 1 }} />
+                <Box>
+                  <Typography
+                    variant="body2"
+                    color="text.primary"
+                    fontWeight="bold"
+                  >
+                    {c.username}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 0.5 }}
+                  >
+                    {c.comment}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontStyle: "italic" }}
+                  >
+                    {c.formattedDate ? formatTime(c.formattedDate) : ""}
+                  </Typography>
+                </Box>
+              </Box>
+            ))
+          ) : (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ textAlign: "center" }}
+            >
+              No comments yet.
+            </Typography>
+          )}
         </Box>
-      </Box>
-    ))
-  ) : (
-    <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>
-      No comments yet.
-    </Typography>
-  )}
-</Box>
         <TextField
           fullWidth
           variant="outlined"
