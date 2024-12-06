@@ -1,68 +1,56 @@
 import React, { useState, useEffect } from "react";
-import { GoogleMap, LoadScriptNext, Marker } from "@react-google-maps/api";
-import { Paper } from "@mui/material";
+import {
+  GoogleMap,
+  LoadScriptNext,
+  Marker,
+  InfoWindow,
+} from "@react-google-maps/api";
+import { Paper, Typography, Box, Chip, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { formatTime } from "../utilities/time";
 
 const mapStyle = [
   {
-    "featureType": "poi",
-    "elementType": "all",
-    "stylers": [{ "visibility": "off" }]
+    featureType: "poi",
+    elementType: "all",
+    stylers: [{ visibility: "off" }],
   },
   {
-    "featureType": "transit",
-    "elementType": "all",
-    "stylers": [{ "visibility": "off" }]
+    featureType: "transit",
+    elementType: "all",
+    stylers: [{ visibility: "off" }],
   },
   {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#ffffff" },
-      { "weight": 1 }
-    ]
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ visibility: "on" }, { color: "#ffffff" }, { weight: 1 }],
   },
   {
-    "featureType": "road",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "on" }]
+    featureType: "road",
+    elementType: "labels",
+    stylers: [{ visibility: "on" }],
   },
   {
-    "featureType": "administrative",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "on" }]
+    featureType: "administrative",
+    elementType: "labels",
+    stylers: [{ visibility: "on" }],
   },
   {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#ffcc00" },
-      { "weight": 1 }
-    ]
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ visibility: "on" }, { color: "#ffcc00" }, { weight: 1 }],
   },
   {
-    "featureType": "road.arterial",
-    "elementType": "geometry",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#cccccc" },
-      { "weight": 1 }
-    ]
+    featureType: "road.arterial",
+    elementType: "geometry",
+    stylers: [{ visibility: "on" }, { color: "#cccccc" }, { weight: 1 }],
   },
   {
-    "featureType": "road.local",
-    "elementType": "geometry",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#e3e3e3" },
-      { "weight": 1 }
-    ]
-  }
-]
-
-
+    featureType: "road.local",
+    elementType: "geometry",
+    stylers: [{ visibility: "on" }, { color: "#e3e3e3" }, { weight: 1 }],
+  },
+];
 
 const MapContainer = styled(Paper)(({ theme }) => ({
   height: "100%",
@@ -73,9 +61,10 @@ const MapContainer = styled(Paper)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
 }));
 
-const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => {
+const MapArea = ({ issues, mapCenter, mapRef, handleIssueSelect }) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [delayComplete, setDelayComplete] = useState(false);
+  const [selectedMarker, setSelectedMarker] = useState(null);
 
   const containerStyle = {
     width: "100%",
@@ -90,9 +79,27 @@ const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => 
     }
   }, [mapLoaded]);
 
+  const handleMarkerClick = (issue) => {
+    if (mapRef.current) {
+      mapRef.current.panTo(issue.location.coordinates);
+    }
+
+    setSelectedMarker(issue);
+
+    setTimeout(() => {
+      handleIssueSelect(issue);
+    }, 100);
+  };
+
+  const handleInfoWindowClose = () => {
+    setSelectedMarker(null);
+  };
+
   return (
     <MapContainer elevation={0}>
-      <LoadScriptNext googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+      <LoadScriptNext
+        googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+      >
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={mapCenter}
@@ -107,16 +114,58 @@ const MapArea = ({ issues, mapCenter, mapRef, hoveredIssue, selectedIssue }) => 
             console.log("Map loaded successfully");
           }}
         >
+          {delayComplete && selectedMarker && (
+            <InfoWindow
+              position={selectedMarker.location.coordinates}
+              onCloseClick={handleInfoWindowClose}
+            >
+              <Box sx={{ p: 2, maxWidth: 300 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                    {selectedMarker.title}
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1 }}
+                >
+                  {selectedMarker.description}
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Chip
+                    label={selectedMarker.category}
+                    size="small"
+                    variant="outlined"
+                    color="primary"
+                  />
+                  <Typography variant="caption" color="text.secondary">
+                    {formatTime(selectedMarker.postDate)}
+                  </Typography>
+                </Box>
+              </Box>
+            </InfoWindow>
+          )}
+
           {delayComplete &&
             issues.map((issue) => (
               <Marker
                 key={issue.id}
                 position={issue.location.coordinates}
-                onClick={() => {
-                  if (issue.id !== hoveredIssue && issue.id !== selectedIssue) {
-                    mapRef.current.panTo(issue.location.coordinates);
-                  }
-                }}
+                onClick={() => handleMarkerClick(issue)}
               />
             ))}
         </GoogleMap>
