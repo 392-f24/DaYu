@@ -30,10 +30,7 @@ export const addIssue = async (issue) => {
 // Fetch all issues
 export const fetchIssues = async (isResolved = false) => {
   try {
-    const q = query(
-      collection(db, "issues"),
-      where("isResolved", "==", isResolved)
-    );
+    const q = query(collection(db, "issues"));
     const querySnapshot = await getDocs(q);
     const issues = [];
     querySnapshot.forEach((doc) => {
@@ -209,7 +206,10 @@ export const fetchComments = async (issueId) => {
       try {
         user = await fetchUserData(commentData.user); // Fetch user details if available
       } catch (error) {
-        console.warn(`Unable to fetch user data for userId: ${commentData.user}`, error);
+        console.warn(
+          `Unable to fetch user data for userId: ${commentData.user}`,
+          error
+        );
       }
       comments.push({ id: doc.id, user, ...commentData });
     }
