@@ -183,22 +183,58 @@ export const addComment = async (issueId, comment) => {
     throw error;
   }
 };
+//Fetch User Data for comments
+export const fetchUserData = async (userId) => {
+  try {
+    const userRef = doc(db, "users", userId); // Correctly create a DocumentReference
+    const userSnapshot = await getDoc(userRef);
+    return userSnapshot.exists() ? userSnapshot.data() : null;
+  } catch (error) {
+    console.error("Error fetching user data: ", error);
+    throw error;
+  }
+};
 
 // Fetch all comments for an issue -- UNTESTED
 export const fetchComments = async (issueId) => {
   try {
+    console.log("Fetching comments...");
     const q = collection(db, "issues", issueId, "comments");
     const querySnapshot = await getDocs(q);
     const comments = [];
-    querySnapshot.forEach((doc) => {
-      comments.push({ id: doc.id, ...doc.data() });
-    });
+
+    for (const doc of querySnapshot.docs) {
+      const commentData = doc.data();
+      let user = null;
+      try {
+        user = await fetchUserData(commentData.user); // Fetch user details if available
+      } catch (error) {
+        console.warn(`Unable to fetch user data for userId: ${commentData.user}`, error);
+      }
+      comments.push({ id: doc.id, user, ...commentData });
+    }
+    console.log("Fetched comments:", comments);
     return comments;
   } catch (error) {
     console.error("Error fetching comments: ", error);
     throw error;
   }
 };
+// export const fetchComments = async (issueId) => {
+//   try {
+//     console.log("Fetching comments...");
+//     const q = collection(db, "issues", issueId, "comments");
+//     const querySnapshot = await getDocs(q);
+//     const comments = [];
+//     querySnapshot.forEach((doc) => {
+//       comments.push({ id: doc.id, ...doc.data() });
+//     });
+//     return comments;
+//   } catch (error) {
+//     console.error("Error fetching comments: ", error);
+//     throw error;
+//   }
+// };
 
 // Increment commentsCount when a comment is added -- UNTESTED
 export const incrementCommentsCount = async (issueId) => {
