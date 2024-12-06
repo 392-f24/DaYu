@@ -354,7 +354,6 @@ export const toggleSavedIssue = async (userId, issueId) => {
   }
 };
 
-
 // Add an issue to a user's verified issues and update the verifiedBy array in the issue doc
 export const addVerifiedIssue = async (userId, issueId) => {
   try {
